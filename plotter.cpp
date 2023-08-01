@@ -14,27 +14,35 @@ Plotter::Plotter(QWidget *parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setFocusPolicy(Qt::StrongFocus);
     rubberBandIsShown = false;
-    zoomInButton = new QToolButton(this);
-    zoomInButton->setIcon(QIcon(":/images/zoomin.png"));
-    zoomInButton->adjustSize();
-    connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
-    zoomOutButton = new QToolButton(this);
-    zoomOutButton->setIcon(QIcon(":/images/zoomout.png"));
-    zoomOutButton->adjustSize();
-    connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
     setPlotSettings(PlotSettings());
 }
 
 void Plotter::setPlotSettings(const PlotSettings &settings)
 {
     plotSettings_ = settings;
-    zoomInButton->hide();
-    zoomOutButton->hide();
     refreshPixmap();
 }
 
 void Plotter::setCurveData(int id, const QVector<QPointF> &data)
 {
+    double minX = std::min_element(data.constBegin(), data.constEnd(), [=](const QPointF &x, const QPointF &y)
+                                   {
+                                       return x.x() < y.x();
+                                   })->x();
+    double maxX = std::min_element(data.constBegin(), data.constEnd(), [=](const QPointF &x, const QPointF &y)
+                                   {
+                                       return x.x() > y.x();
+                                   })->x();
+    double minY = std::min_element(data.constBegin(), data.constEnd(), [=](const QPointF &x, const QPointF &y)
+                                   {
+                                       return x.y() < y.y();
+                                   })->y();
+    double maxY = std::min_element(data.constBegin(), data.constEnd(), [=](const QPointF &x, const QPointF &y)
+                                   {
+                                       return x.y() > y.y();
+                                   })->y();
+
+    updateScale(minX, maxX, minY, maxY);
     curveMap[id] = data;
     refreshPixmap();
 }
@@ -74,57 +82,7 @@ void Plotter::paintEvent(QPaintEvent *event)
 
 void Plotter::resizeEvent(QResizeEvent *event)
 {
-    int x = width() - (zoomInButton->width()
-                       + zoomOutButton->width() + 10);
-    zoomInButton->move(x, 5);
-    zoomOutButton->move(x + zoomInButton->width() + 5, 5);
     refreshPixmap();
-}
-
-void Plotter::mousePressEvent(QMouseEvent *event)
-{
-    QRect rect(Margin, Margin,
-               width() - 2 * Margin, height() - 2 * Margin);
-    if (event->button() == Qt::LeftButton) {
-        if (rect.contains(event->pos())) {
-            rubberBandIsShown = true;
-            rubberBandRect.setTopLeft(event->pos());
-            rubberBandRect.setBottomRight(event->pos());
-            updateRubberBandRegion();
-            setCursor(Qt::CrossCursor);
-        }
-    }
-}
-
-void Plotter::mouseMoveEvent(QMouseEvent *event)
-{
-    if (rubberBandIsShown) {
-        updateRubberBandRegion();
-        rubberBandRect.setBottomRight(event->pos());
-        updateRubberBandRegion();
-    }
-}
-
-void Plotter::mouseReleaseEvent(QMouseEvent *event)
-{
-    if ((event->button() == Qt::LeftButton) && rubberBandIsShown) {
-        rubberBandIsShown = false;
-        updateRubberBandRegion();
-        unsetCursor();
-        QRect rect = rubberBandRect.normalized();
-        if (rect.width() < 4 || rect.height() < 4)
-            return;
-        rect.translate(-Margin, -Margin);
-        PlotSettings prevSettings = plotSettings_;
-        PlotSettings settings;
-        double dx = prevSettings.spanX() / (width() - 2 * Margin);
-        double dy = prevSettings.spanY() / (height() - 2 * Margin);
-        settings.minX = prevSettings.minX + dx * rect.left();
-        settings.maxX = prevSettings.minX + dx * rect.right();
-        settings.minY = prevSettings.maxY - dy * rect.bottom();
-        settings.maxY = prevSettings.maxY - dy * rect.top();
-        settings.adjust();
-    }
 }
 
 void Plotter::updateRubberBandRegion()
@@ -216,6 +174,14 @@ void Plotter::drawCurves(QPainter *painter)
         painter->setPen(colorForIds[uint(id) % 6]);
         painter->drawPolyline(polyline);
     }
+}
+
+void Plotter::updateScale(double minX, double maxX, double minY, double maxY)
+{
+    plotSettings_.minX = minX;
+    plotSettings_.maxX = maxX;
+    plotSettings_.minY = minY;
+    plotSettings_.maxY = maxY;
 }
 
 Plotter::PlotSettings::PlotSettings()

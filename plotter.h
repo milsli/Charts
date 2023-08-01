@@ -44,18 +44,16 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     void updateRubberBandRegion();
     void refreshPixmap();
     void drawGrid(QPainter *painter);
     void drawCurves(QPainter *painter);
+    void updateScale(double minX, double maxX, double minY, double maxY);
+
+private:
     enum { Margin = 50 };
-    QToolButton *zoomInButton;
-    QToolButton *zoomOutButton;
     QMap<int, QVector<QPointF> > curveMap;
     PlotSettings plotSettings_;
     bool rubberBandIsShown;
