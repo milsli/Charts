@@ -10,7 +10,7 @@ Plotter::Plotter(QWidget *parent)
     : QWidget{parent}
 {
     setBackgroundRole(QPalette::Dark);
-    setAutoFillBackground(true);
+    // setAutoFillBackground(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setFocusPolicy(Qt::StrongFocus);
     rubberBandIsShown = false;
@@ -67,12 +67,16 @@ void Plotter::paintEvent(QPaintEvent *event)
 {
     QStylePainter painter(this);
     painter.drawPixmap(0, 0, pixmap);
-    if (rubberBandIsShown) {
+
+    if (rubberBandIsShown)
+    {
         painter.setPen(palette().light().color());
         painter.drawRect(rubberBandRect.normalized()
                              .adjusted(0, 0, -1, -1));
     }
-    if (hasFocus()) {
+
+    if (hasFocus())
+    {
         QStyleOptionFocusRect option;
         option.initFrom(this);
         option.backgroundColor = palette().dark().color();
@@ -97,9 +101,10 @@ void Plotter::updateRubberBandRegion()
 void Plotter::refreshPixmap()
 {
     pixmap = QPixmap(size());
-    pixmap.fill(this, 0, 0);
+    // pixmap.fill(this, 0, 0);
     QPainter painter(&pixmap);
-    painter.initFrom(this);
+    painter.begin(this);
+
     drawGrid(&painter);
     drawCurves(&painter);
     update();
@@ -112,7 +117,8 @@ void Plotter::drawGrid(QPainter *painter)
     if (!rect.isValid())
         return;
     PlotSettings settings = plotSettings_;
-    QPen quiteDark = palette().dark().color().light();
+
+    QPen quiteDark = palette().dark().color().lighter();
     QPen light = palette().light().color();
     for (int i = 0; i <= settings.numXTicks; ++i) {
         int x = rect.left() + (i * (rect.width() - 1)
@@ -202,12 +208,6 @@ void Plotter::PlotSettings::scroll(int dx, int dy)
     double stepY = spanY() / numYTicks;
     minY += dy * stepY;
     maxY += dy * stepY;
-}
-
-void Plotter::PlotSettings::adjust()
-{
-    adjustAxis(minX, maxX, numXTicks);
-    adjustAxis(minY, maxY, numYTicks);
 }
 
 double Plotter::PlotSettings::spanX() const { return maxX - minX; }

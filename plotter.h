@@ -17,7 +17,6 @@ class Plotter : public QWidget
     public:
         PlotSettings();
         void scroll(int dx, int dy);
-        void adjust();
         double spanX() const;
         double spanY() const;
 

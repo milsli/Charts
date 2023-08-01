@@ -135,12 +135,8 @@ void Widget::fulfillList()
         pointSeries_.append(QPointF(timeValue, pressureStringValue.toDouble()));
     }
 
-
-//    pointSeries_.clear();
-//    QVector<QPointF> tempVect {QPointF(2,725), QPointF(3,780), QPointF(4, 790), QPointF(5, 759)};
-//    pointSeries_.append(tempVect);
-
-    plotterChart->setCurveData(0, pointSeries_);
+    if(pointSeries_.size() > 1)
+        plotterChart->setCurveData(0, pointSeries_);
 }
 
 void Widget::addSeriesElement(int row, int column)
