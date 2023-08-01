@@ -1,4 +1,5 @@
 #include "widget.h"
+#include "plotter.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -22,6 +23,7 @@ void Widget::setView()
 {
     QHBoxLayout *tableChartLayout = new QHBoxLayout;
     pressureTimeTable_ = new QTableWidget(ROW_NUMBER, 2);
+    pressureTimeTable_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 
 
     for(int i = 0; i < ROW_NUMBER; ++i)
@@ -30,15 +32,18 @@ void Widget::setView()
     pressureChart_ = new QChart();
     pressureChartView_ = new QChartView(pressureChart_);
 
+    plotterChart = new Plotter;
+
     QRect chartGeometry = pressureChartView_->geometry();
     chartGeometry.setWidth(chartGeometry.width() + 600);
     pressureChartView_->setGeometry(chartGeometry);
 
     tableChartLayout->addSpacing(20);
-    tableChartLayout->addStretch();
+    //tableChartLayout->addStretch();
     tableChartLayout->addWidget(pressureTimeTable_)        ;
     tableChartLayout->addWidget(pressureChartView_)        ;
-    tableChartLayout->addStretch();
+    tableChartLayout->addWidget(plotterChart)        ;
+    //tableChartLayout->addStretch();
 
     mainLayout_->addLayout(tableChartLayout);
 
@@ -120,12 +125,22 @@ void Widget::fulfillList()
             continue;
 
         // QTime timeStringValue = timeItem->time();
-        QDateTime dateTimeValue(QDate(), timeItem->time());
+        QString hhMm = timeItem->text();
+        QStringList hhAndMm = hhMm.split(":");
+
+        int16_t timeValue = hhAndMm[0].toInt() * 60 + hhAndMm[1].toInt();
 
         QString pressureStringValue = pressureItem->data(Qt::EditRole).toString();
 
-        pointSeries_.append(QPointF(dateTimeValue.toMSecsSinceEpoch(), pressureStringValue.toDouble()));
+        pointSeries_.append(QPointF(timeValue, pressureStringValue.toDouble()));
     }
+
+
+//    pointSeries_.clear();
+//    QVector<QPointF> tempVect {QPointF(2,725), QPointF(3,780), QPointF(4, 790), QPointF(5, 759)};
+//    pointSeries_.append(tempVect);
+
+    plotterChart->setCurveData(0, pointSeries_);
 }
 
 void Widget::addSeriesElement(int row, int column)
@@ -187,7 +202,7 @@ void Widget::addSeriesElement(int row, int column)
 
         }
 
-//        pressureChartView_->chart()->addSeries(pressureSeries_);
+        pressureChartView_->chart()->addSeries(pressureSeries_);
 
         pressureChartView_->chart()->removeAxis(axisX_);
 

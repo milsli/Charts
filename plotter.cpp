@@ -27,9 +27,7 @@ Plotter::Plotter(QWidget *parent)
 
 void Plotter::setPlotSettings(const PlotSettings &settings)
 {
-    zoomStack.clear();
-    zoomStack.append(settings);
-    curZoom = 0;
+    plotSettings_ = settings;
     zoomInButton->hide();
     zoomOutButton->hide();
     refreshPixmap();
@@ -117,7 +115,7 @@ void Plotter::mouseReleaseEvent(QMouseEvent *event)
         if (rect.width() < 4 || rect.height() < 4)
             return;
         rect.translate(-Margin, -Margin);
-        PlotSettings prevSettings = zoomStack[curZoom];
+        PlotSettings prevSettings = plotSettings_;
         PlotSettings settings;
         double dx = prevSettings.spanX() / (width() - 2 * Margin);
         double dy = prevSettings.spanY() / (height() - 2 * Margin);
@@ -126,52 +124,7 @@ void Plotter::mouseReleaseEvent(QMouseEvent *event)
         settings.minY = prevSettings.maxY - dy * rect.bottom();
         settings.maxY = prevSettings.maxY - dy * rect.top();
         settings.adjust();
-        zoomStack.resize(curZoom + 1);
-        zoomStack.append(settings);
-        zoomIn();
     }
-}
-
-void Plotter::keyPressEvent(QKeyEvent *event)
-{
-    switch (event->key()) {
-    case Qt::Key_Plus:
-        zoomIn();
-        break;
-    case Qt::Key_Minus:
-        zoomOut();
-        break;
-    case Qt::Key_Left:
-        zoomStack[curZoom].scroll(-1, 0);
-        refreshPixmap();
-        break;
-    case Qt::Key_Right:
-        zoomStack[curZoom].scroll(+1, 0);
-        refreshPixmap();
-        break;
-    case Qt::Key_Down:
-        zoomStack[curZoom].scroll(0, -1);
-        refreshPixmap();
-        break;
-    case Qt::Key_Up:
-        zoomStack[curZoom].scroll(0, +1);
-        refreshPixmap();
-        break;
-    default:
-        QWidget::keyPressEvent(event);
-    }
-}
-
-void Plotter::wheelEvent(QWheelEvent *event)
-{
-    int numDegrees = event->delta() / 8;
-    int numTicks = numDegrees / 15;
-    if (event->orientation() == Qt::Horizontal) {
-        zoomStack[curZoom].scroll(numTicks, 0);
-    } else {
-        zoomStack[curZoom].scroll(0, numTicks);
-    }
-    refreshPixmap();
 }
 
 void Plotter::updateRubberBandRegion()
@@ -200,21 +153,23 @@ void Plotter::drawGrid(QPainter *painter)
                width() - 2 * Margin, height() - 2 * Margin);
     if (!rect.isValid())
         return;
-    PlotSettings settings = zoomStack[curZoom];
+    PlotSettings settings = plotSettings_;
     QPen quiteDark = palette().dark().color().light();
     QPen light = palette().light().color();
     for (int i = 0; i <= settings.numXTicks; ++i) {
         int x = rect.left() + (i * (rect.width() - 1)
                                / settings.numXTicks);
-        double label = settings.minX + (i * settings.spanX()
+        int16_t label = settings.minX + (i * settings.spanX()
                                         / settings.numXTicks);
+        QString timeLabel = QString::number(label / 60) + ":" + QString::number(label % 60);
+
         painter->setPen(quiteDark);
         painter->drawLine(x, rect.top(), x, rect.bottom());
         painter->setPen(light);
         painter->drawLine(x, rect.bottom(), x, rect.bottom() + 5);
         painter->drawText(x - 50, rect.bottom() + 5, 100, 15,
                           Qt::AlignHCenter | Qt::AlignTop,
-                          QString::number(label));
+                          timeLabel);
     }
     for (int j = 0; j <= settings.numYTicks; ++j) {
         int y = rect.bottom() - (j * (rect.height() - 1)
@@ -237,7 +192,7 @@ void Plotter::drawCurves(QPainter *painter)
     static const QColor colorForIds[6] = {
         Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow
     };
-    PlotSettings settings = zoomStack[curZoom];
+    PlotSettings settings = plotSettings_;
     QRect rect(Margin, Margin,
                width() - 2 * Margin, height() - 2 * Margin);
     if (!rect.isValid())
@@ -263,39 +218,17 @@ void Plotter::drawCurves(QPainter *painter)
     }
 }
 
-void Plotter::zoomIn()
-{
-    if (curZoom < zoomStack.count() - 1) {
-        ++curZoom;
-        zoomInButton->setEnabled(curZoom < zoomStack.count() - 1);
-        zoomOutButton->setEnabled(true);
-        zoomOutButton->show();
-        refreshPixmap();
-    }
-}
-
-void Plotter::zoomOut()
-{
-    if (curZoom > 0) {
-        --curZoom;
-        zoomOutButton->setEnabled(curZoom > 0);
-        zoomInButton->setEnabled(true);
-        zoomInButton->show();
-        refreshPixmap();
-    }
-}
-
-PlotSettings::PlotSettings()
+Plotter::PlotSettings::PlotSettings()
 {
     minX = 0.0;
-    maxX = 10.0;
+    maxX = 100.0;
     numXTicks = 5;
-    minY = 0.0;
-    maxY = 10.0;
+    minY = 720.0;
+    maxY = 820.0;
     numYTicks = 5;
 }
 
-void PlotSettings::scroll(int dx, int dy)
+void Plotter::PlotSettings::scroll(int dx, int dy)
 {
     double stepX = spanX() / numXTicks;
     minX += dx * stepX;
@@ -305,17 +238,17 @@ void PlotSettings::scroll(int dx, int dy)
     maxY += dy * stepY;
 }
 
-void PlotSettings::adjust()
+void Plotter::PlotSettings::adjust()
 {
     adjustAxis(minX, maxX, numXTicks);
     adjustAxis(minY, maxY, numYTicks);
 }
 
-double PlotSettings::spanX() const { return maxX - minX; }
+double Plotter::PlotSettings::spanX() const { return maxX - minX; }
 
-double PlotSettings::spanY() const { return maxY - minY; }
+double Plotter::PlotSettings::spanY() const { return maxY - minY; }
 
-void PlotSettings::adjustAxis(double &min, double &max, int &numTicks)
+void Plotter::PlotSettings::adjustAxis(double &min, double &max, int &numTicks)
 {
     const int MinTicks = 4;
     double grossStep = (max - min) / MinTicks;

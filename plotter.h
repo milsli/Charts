@@ -12,6 +12,26 @@ class PlotSettings;
 class Plotter : public QWidget
 {
     Q_OBJECT
+    class PlotSettings
+    {
+    public:
+        PlotSettings();
+        void scroll(int dx, int dy);
+        void adjust();
+        double spanX() const;
+        double spanY() const;
+
+        double minX;
+        double maxX;
+        int numXTicks;
+        double minY;
+        double maxY;
+        int numYTicks;
+    private:
+        static void adjustAxis(double &min, double &max, int &numTicks);
+
+    };
+
 public:
     explicit Plotter(QWidget *parent = nullptr);
 
@@ -27,8 +47,6 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void wheelEvent(QWheelEvent *event);
 
 private:
     void updateRubberBandRegion();
@@ -39,36 +57,13 @@ private:
     QToolButton *zoomInButton;
     QToolButton *zoomOutButton;
     QMap<int, QVector<QPointF> > curveMap;
-    QVector<PlotSettings> zoomStack;
-    int curZoom;
+    PlotSettings plotSettings_;
     bool rubberBandIsShown;
     QRect rubberBandRect;
     QPixmap pixmap;
 
-public slots:
-    void zoomIn();
-    void zoomOut();
 signals:
 
 };
 
-class PlotSettings
-{
-public:
-    PlotSettings();
-    void scroll(int dx, int dy);
-    void adjust();
-    double spanX() const;
-    double spanY() const;
-
-    double minX;
-    double maxX;
-    int numXTicks;
-    double minY;
-    double maxY;
-    int numYTicks;
-private:
-    static void adjustAxis(double &min, double &max, int &numTicks);
-
-};
 #endif // PLOTTER_H

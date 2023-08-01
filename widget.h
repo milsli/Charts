@@ -8,6 +8,7 @@
 
 class QBoxLayout;
 class QTableWidget;
+class Plotter;
 
 #define ROW_NUMBER 12
 
@@ -41,7 +42,9 @@ private:
     QChartView *pressureChartView_;
     QDateTimeAxis *axisX_;
 
-    QList<QPointF> pointSeries_;
+    Plotter *plotterChart;
+
+    QVector<QPointF> pointSeries_;
 
 private slots:
     void addSeriesElement(int row, int column);
