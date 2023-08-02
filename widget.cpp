@@ -1,11 +1,13 @@
 #include "widget.h"
 #include "plotter.h"
+#include "pressuretabledelegate.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , minYValue_(0.0)
     , maxYValue_(1.1)
     , firstAppend(true)
+    , currentRowNumber_(MINIMUM_ROW_NUMBER)
 {
     this->setGeometry(30,50, 1800, 900);
 
@@ -22,11 +24,53 @@ Widget::~Widget()
 void Widget::setView()
 {
     QHBoxLayout *tableChartLayout = new QHBoxLayout;
-    pressureTimeTable_ = new QTableWidget(ROW_NUMBER, 2);
+    pressureTimeTable_ = new QTableWidget(12, 2);
     pressureTimeTable_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 
+    //////////////////////////////////////
+    // layout for TableView
 
-    for(int i = 0; i < ROW_NUMBER; ++i)
+    QVBoxLayout *pressureTableLayout = new QVBoxLayout;
+
+    pressureTableModel_ = new QStandardItemModel(MINIMUM_ROW_NUMBER, 2, this);
+    pressureTable_ = new QTableView();
+    pressureTable_->setModel(pressureTableModel_);
+
+    pressureTableDelegate_ = new PressureTableDelegate(this);
+    pressureTable_->setItemDelegate(pressureTableDelegate_);
+    // pressureTable_->setItemDelegateForColumn(0, pressureTableDelegate_);
+
+    QPixmap plusPixmap("../TimeTableWidget/plus.png");
+    QPixmap minusPixmap("../TimeTableWidget/minus.png");
+    QIcon plusIcon(plusPixmap);
+    QIcon minusIcon(minusPixmap);
+
+    plusButton_ = new QPushButton;
+    minusButton_ = new QPushButton;
+
+    plusButton_->setIcon(plusIcon);
+    plusButton_->setIconSize(plusPixmap.rect().size());
+    minusButton_->setIcon(minusIcon);
+    minusButton_->setIconSize(minusPixmap.rect().size());
+
+    plusButton_->setMaximumSize(plusPixmap.rect().size() + QSize(30,10));
+    minusButton_->setMaximumSize(minusPixmap.rect().size() + QSize(30,10));
+
+    QHBoxLayout *buttonsLauout = new QHBoxLayout;
+    buttonsLauout->addWidget(plusButton_);
+    buttonsLauout->addWidget(minusButton_);
+
+    pressureTableLayout->addWidget(pressureTable_);
+    pressureTableLayout->addStretch();
+    pressureTableLayout->addLayout(buttonsLauout);
+
+
+    connect(plusButton_, &QPushButton::clicked, this,  &Widget::addRow);
+    connect(minusButton_, &QPushButton::clicked, this, &Widget::removeRow);
+
+    //////////////////////////////////////
+
+    for(int i = 0; i < 12; ++i)
         pressureTimeTable_->setCellWidget(i, 0, new QTimeEdit);
 
     pressureChart_ = new QChart();
@@ -40,9 +84,10 @@ void Widget::setView()
 
     tableChartLayout->addSpacing(20);
     //tableChartLayout->addStretch();
-    tableChartLayout->addWidget(pressureTimeTable_)        ;
-    tableChartLayout->addWidget(pressureChartView_)        ;
-    tableChartLayout->addWidget(plotterChart)        ;
+    tableChartLayout->addWidget(pressureTimeTable_);
+    tableChartLayout->addLayout(pressureTableLayout);
+    tableChartLayout->addWidget(pressureChartView_);
+    tableChartLayout->addWidget(plotterChart);
     //tableChartLayout->addStretch();
 
     mainLayout_->addLayout(tableChartLayout);
@@ -50,7 +95,7 @@ void Widget::setView()
     pressureSeries_ = new QLineSeries;
 
     connect(pressureTimeTable_, SIGNAL(cellChanged(int,int)), this, SLOT(addSeriesElement(int,int)));
-//    connect(pressureTimeTable_, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(timeItemChanged(QTableWidgetItem*)));
+    connect(pressureTimeTable_, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(timeItemChanged(QTableWidgetItem*)));
 
     pressureChart_->addSeries(pressureSeries_);
     if(pressureChart_->axes().size() == 0)
@@ -105,7 +150,7 @@ void Widget::updateChart()
 
 }
 
-bool Widget::validateCellValue(QString &s, double &value)
+bool Widget::validateCellDoubleValue(QString &s, double &value)
 {
     s.replace(",", ".");
     bool ok;
@@ -116,7 +161,7 @@ bool Widget::validateCellValue(QString &s, double &value)
 void Widget::fulfillList()
 {
     pointSeries_.clear();
-    for(int i = 0; i < ROW_NUMBER; ++i)
+    for(int i = 0; i < MINIMUM_ROW_NUMBER; ++i)
     {
         QTimeEdit *timeItem = static_cast<QTimeEdit*>(pressureTimeTable_->cellWidget(i, 0));
         QTableWidgetItem *pressureItem = pressureTimeTable_->item(i, 1);
@@ -152,7 +197,7 @@ void Widget::addSeriesElement(int row, int column)
     {
         pressureTimeTable_->blockSignals(true);
         double doubleValue;
-        if(!validateCellValue(columnStringValue, doubleValue))
+        if(!validateCellDoubleValue(columnStringValue, doubleValue))
         {
             pressureTimeTable_->setItem(row, column, new QTableWidgetItem(""));
             pressureTimeTable_->blockSignals(false);
@@ -220,6 +265,17 @@ void Widget::addSeriesElement(int row, int column)
 void Widget::timeItemChanged(QTableWidgetItem *item)
 {
     int tt= 0 ;
-    ++tt;
+        ++tt;
+}
+
+void Widget::addRow()
+{
+    pressureTableModel_->setRowCount(++currentRowNumber_);
+}
+
+void Widget::removeRow()
+{
+    if(currentRowNumber_ > MINIMUM_ROW_NUMBER)
+        pressureTableModel_->setRowCount(--currentRowNumber_);
 }
 

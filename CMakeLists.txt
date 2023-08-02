@@ -18,6 +18,8 @@ set(PROJECT_SOURCES
         widget.h
         plotter.h
         plotter.cpp
+        pressuretabledelegate.h
+        pressuretabledelegate.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

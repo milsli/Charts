@@ -9,8 +9,9 @@
 class QBoxLayout;
 class QTableWidget;
 class Plotter;
+class PressureTableDelegate;
 
-#define ROW_NUMBER 12
+#define MINIMUM_ROW_NUMBER 2
 
 class Widget : public QWidget
 {
@@ -25,7 +26,7 @@ private:
     void updateChart();
 
     // walidacja czy wartość numeryczna (zamiana , (przecinka) na . (kropka))
-    bool validateCellValue(QString &s, double &value);
+    bool validateCellDoubleValue(QString &s, double &value);
 
     // przegląd całej tabeli - wpisanie każdego kompletnego wiersza do listy
     void fulfillList();
@@ -34,6 +35,7 @@ private:
     double minYValue_;
     double maxYValue_;
     bool firstAppend;
+    uint16_t currentRowNumber_;
 
     QBoxLayout *mainLayout_;
     QTableWidget *pressureTimeTable_;
@@ -42,6 +44,13 @@ private:
     QChartView *pressureChartView_;
     QDateTimeAxis *axisX_;
 
+    // TableView
+    QTableView *pressureTable_;
+    QStandardItemModel *pressureTableModel_;
+    QPushButton *plusButton_;
+    QPushButton *minusButton_;
+    PressureTableDelegate *pressureTableDelegate_;
+
     Plotter *plotterChart;
 
     QVector<QPointF> pointSeries_;
@@ -49,6 +58,9 @@ private:
 private slots:
     void addSeriesElement(int row, int column);
     void timeItemChanged(QTableWidgetItem* item);
+
+    void addRow();
+    void removeRow();
 
 };
 #endif // WIDGET_H
