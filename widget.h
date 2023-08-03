@@ -46,6 +46,7 @@ private:
 
     // TableView
     QTableView *pressureTable_;
+    // QAbstractTableModel - todo
     QStandardItemModel *pressureTableModel_;
     QPushButton *plusButton_;
     QPushButton *minusButton_;

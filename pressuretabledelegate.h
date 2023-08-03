@@ -1,10 +1,10 @@
 #ifndef PRESSURETABLEDELEGATE_H
 #define PRESSURETABLEDELEGATE_H
 
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 #include <QObject>
 
-class PressureTableDelegate : public QItemDelegate
+class PressureTableDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:

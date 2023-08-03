@@ -37,8 +37,8 @@ void Widget::setView()
     pressureTable_->setModel(pressureTableModel_);
 
     pressureTableDelegate_ = new PressureTableDelegate(this);
-    pressureTable_->setItemDelegate(pressureTableDelegate_);
-    // pressureTable_->setItemDelegateForColumn(0, pressureTableDelegate_);
+//    pressureTable_->setItemDelegate(pressureTableDelegate_);
+    pressureTable_->setItemDelegateForColumn(0, pressureTableDelegate_);
 
     QPixmap plusPixmap("../TimeTableWidget/plus.png");
     QPixmap minusPixmap("../TimeTableWidget/minus.png");
