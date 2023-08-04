@@ -33,9 +33,10 @@ void Widget::setView()
     pressureTable_ = new QTableView();
     pressureTable_->setModel(pressureTableModel_);
 
-    pressureTableDelegate_ = new PressureTableDelegate(this);
-//    pressureTable_->setItemDelegate(pressureTableDelegate_);
-    pressureTable_->setItemDelegateForColumn(0, pressureTableDelegate_);
+    timeColumnDelegate_ = new TimeColumnDelegate(this);
+    numberColumnDelegate_ = new NumberColumnDelegate(this);
+    pressureTable_->setItemDelegateForColumn(0, timeColumnDelegate_);
+    pressureTable_->setItemDelegateForColumn(1, numberColumnDelegate_);
 
     QPixmap plusPixmap("../Charts/plus.png");
     QPixmap minusPixmap("../Charts/minus.png");

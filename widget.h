@@ -9,7 +9,8 @@
 class QBoxLayout;
 class QTableWidget;
 class Plotter;
-class PressureTableDelegate;
+class TimeColumnDelegate;
+class NumberColumnDelegate;
 
 #define MINIMUM_ROW_NUMBER 2
 
@@ -34,7 +35,8 @@ private:
     QStandardItemModel *pressureTableModel_;
     QPushButton *plusButton_;
     QPushButton *minusButton_;
-    PressureTableDelegate *pressureTableDelegate_;
+    TimeColumnDelegate *timeColumnDelegate_;
+    NumberColumnDelegate *numberColumnDelegate_;
 
     Plotter *plotterChart;
 

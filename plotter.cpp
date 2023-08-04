@@ -103,7 +103,6 @@ void Plotter::refreshPixmap()
     pixmap = QPixmap(size());
     // pixmap.fill(this, 0, 0);
     QPainter painter(&pixmap);
-    painter.begin(this);
 
     drawGrid(&painter);
     drawCurves(&painter);
