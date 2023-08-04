@@ -23,7 +23,7 @@ void Plotter::setPlotSettings(const PlotSettings &settings)
     refreshPixmap();
 }
 
-void Plotter::setCurveData(int id, const QVector<QPointF> &data)
+void Plotter::setCurveData(int id, const QVector<QPoint> &data)
 {
     double minX = std::min_element(data.constBegin(), data.constEnd(), [=](const QPointF &x, const QPointF &y)
                                    {
@@ -162,12 +162,12 @@ void Plotter::drawCurves(QPainter *painter)
     if (!rect.isValid())
         return;
     painter->setClipRect(rect.adjusted(+1, +1, -1, -1));
-    QMapIterator<int, QVector<QPointF> > i(curveMap);
+    QMapIterator<int, QVector<QPoint> > i(curveMap);
     while (i.hasNext()) {
         i.next();
         int id = i.key();
-        const QVector<QPointF> &data = i.value();
-        QPolygonF polyline(data.count());
+        const QVector<QPoint> &data = i.value();
+        QPolygon polyline(data.count());
         for (int j = 0; j < data.count(); ++j) {
             double dx = data[j].x() - settings.minX;
             double dy = data[j].y() - settings.minY;
@@ -175,7 +175,7 @@ void Plotter::drawCurves(QPainter *painter)
                                       / settings.spanX());
             double y = rect.bottom() - (dy * (rect.height() - 1)
                                         / settings.spanY());
-            polyline[j] = QPointF(x, y);
+            polyline[j] = QPoint(x, y);
         }
         painter->setPen(colorForIds[uint(id) % 6]);
         painter->drawPolyline(polyline);

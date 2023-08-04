@@ -54,11 +54,13 @@ private:
 
     Plotter *plotterChart;
 
-    QVector<QPointF> pointSeries_;
+    QVector<QPoint> pointSeries_;
 
 private slots:
     void addSeriesElement(int row, int column);
     void timeItemChanged(QTableWidgetItem* item);
+
+    void tableDataChanged(QStandardItem *item);
 
     void addRow();
     void removeRow();

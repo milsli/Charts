@@ -33,6 +33,8 @@ void Widget::setView()
     QVBoxLayout *pressureTableLayout = new QVBoxLayout;
 
     pressureTableModel_ = new QStandardItemModel(MINIMUM_ROW_NUMBER, 2, this);
+    pressureTableModel_->setHeaderData(0, Qt::Horizontal, "Czas [hh::mm]");
+    pressureTableModel_->setHeaderData(1, Qt::Horizontal, "Ciśnienie [mmHg]");
     pressureTable_ = new QTableView();
     pressureTable_->setModel(pressureTableModel_);
 
@@ -40,8 +42,8 @@ void Widget::setView()
 //    pressureTable_->setItemDelegate(pressureTableDelegate_);
     pressureTable_->setItemDelegateForColumn(0, pressureTableDelegate_);
 
-    QPixmap plusPixmap("../TimeTableWidget/plus.png");
-    QPixmap minusPixmap("../TimeTableWidget/minus.png");
+    QPixmap plusPixmap("../Charts/plus.png");
+    QPixmap minusPixmap("../Charts/minus.png");
     QIcon plusIcon(plusPixmap);
     QIcon minusIcon(minusPixmap);
 
@@ -67,6 +69,8 @@ void Widget::setView()
 
     connect(plusButton_, &QPushButton::clicked, this,  &Widget::addRow);
     connect(minusButton_, &QPushButton::clicked, this, &Widget::removeRow);
+
+    connect(pressureTableModel_, &QStandardItemModel::itemChanged, this, &Widget::tableDataChanged);
 
     //////////////////////////////////////
 
@@ -177,11 +181,11 @@ void Widget::fulfillList()
 
         QString pressureStringValue = pressureItem->data(Qt::EditRole).toString();
 
-        pointSeries_.append(QPointF(timeValue, pressureStringValue.toDouble()));
+        pointSeries_.append(QPoint(timeValue, pressureStringValue.toDouble()));
     }
 
-    if(pointSeries_.size() > 1)
-        plotterChart->setCurveData(0, pointSeries_);
+//    if(pointSeries_.size() > 1)
+//        plotterChart->setCurveData(0, pointSeries_);
 }
 
 void Widget::addSeriesElement(int row, int column)
@@ -266,6 +270,45 @@ void Widget::timeItemChanged(QTableWidgetItem *item)
 {
     int tt= 0 ;
         ++tt;
+}
+
+void Widget::tableDataChanged(QStandardItem *item)
+{
+        // todo: sprawdzenie czy wartość wykasowana
+        // todo: weryfikacja poprawności czasu
+    int column = item->column();
+    int row = item->row();
+
+    int iTime = 0;
+    int16_t pressure = 0;
+    if(column == 0)
+    {
+        QTime time = item->data(Qt::DisplayRole).toTime();
+        iTime = time.hour() * 60 + time.minute();
+    }
+    else if(column == 1)
+        pressure = item->data(Qt::DisplayRole).toInt();
+
+    int serieSize = pointSeries_.size();
+    if(row == serieSize)    // new point
+    {
+        QPoint newPoint {iTime, pressure};
+        pointSeries_.append(newPoint);
+    }
+    else
+    {
+        QPoint *point = pointSeries_.data();
+        if(column == 0)
+            point[row].setX(iTime);
+        if(column == 1)
+            point[row].setY(pressure);
+    }
+
+    if(serieSize >= 2)
+    {
+        if(pointSeries_.size() > 1)
+            plotterChart->setCurveData(0, pointSeries_);
+    }
 }
 
 void Widget::addRow()

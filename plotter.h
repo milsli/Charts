@@ -35,7 +35,7 @@ public:
     explicit Plotter(QWidget *parent = nullptr);
 
     void setPlotSettings(const PlotSettings &settings);
-    void setCurveData(int id, const QVector<QPointF> &data);
+    void setCurveData(int id, const QVector<QPoint> &data);
     void clearCurve(int id);
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
@@ -53,7 +53,7 @@ private:
 
 private:
     enum { Margin = 50 };
-    QMap<int, QVector<QPointF> > curveMap;
+    QMap<int, QVector<QPoint> > curveMap;
     PlotSettings plotSettings_;
     bool rubberBandIsShown;
     QRect rubberBandRect;

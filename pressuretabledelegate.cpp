@@ -16,7 +16,7 @@ QWidget *PressureTableDelegate::createEditor(QWidget *parent, const QStyleOption
 
 void PressureTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    QTime time = index.model()->data(index, Qt::DisplayRole).toTime();
+    QTime time = index.model()->data(index, Qt::DisplayRole).toTime();    
     QTimeEdit *timeEdit = static_cast<QTimeEdit *>(editor);
     timeEdit->setTime(time);
 }
