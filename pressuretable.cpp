@@ -1,9 +1,10 @@
 #include "pressuretable.h"
 #include "pressuretabledelegate.h"
 
-PressureTable::PressureTable(QTableView *parent) : QTableView(parent)
+PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
     , currentNumberRows_(MINIMUM_ROW_NUMBER)
 {
+    setMaximumWidth(300);   // todo - zrobić to po bożemu
     setupModel();
     setupDelegates();
 }
@@ -17,6 +18,14 @@ void PressureTable::removeRow()
 {
     if(currentNumberRows_ > MINIMUM_ROW_NUMBER)
         pressureTableModel_->setRowCount(--currentNumberRows_);
+}
+
+QSize PressureTable::sizeHint() const
+{
+    QWidget *parentWidget = static_cast<QWidget*>(parent());
+    QSize parentRectSize = parentWidget->rect().size();
+
+    return QSize(parentRectSize.width() / 10, parentRectSize.height());
 }
 
 void PressureTable::setupModel()

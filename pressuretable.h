@@ -13,10 +13,11 @@ class PressureTable : public QTableView
 {
     Q_OBJECT
 public:
-    PressureTable(QTableView *parent = nullptr);
+    PressureTable(QWidget *parent = nullptr);
 
     void addRow();
     void removeRow();
+    QSize sizeHint() const;
 
 private:
     void setupModel();

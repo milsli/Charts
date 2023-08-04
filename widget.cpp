@@ -19,8 +19,7 @@ Widget::~Widget()
 void Widget::setupView()
 {
     QVBoxLayout *pressureTableLayout = new QVBoxLayout;
-
-    pressureTable_ = new PressureTable();
+    pressureTable_ = new PressureTable(this);
 
     pressureTableLayout->addWidget(pressureTable_);
     pressureTableLayout->addStretch();
