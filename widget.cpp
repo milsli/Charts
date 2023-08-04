@@ -1,43 +1,41 @@
 #include "widget.h"
 #include "plotter.h"
-#include "pressuretabledelegate.h"
+#include "pressuretable.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
-    , currentNumberRows_(MINIMUM_ROW_NUMBER)
 {
     this->setGeometry(30,50, 1800, 900);
 
     mainLayout_ = new QHBoxLayout;
     setLayout(mainLayout_);
-
-    setView();
+    setupView();
 }
 
 Widget::~Widget()
 {
 }
 
-void Widget::setView()
+void Widget::setupView()
 {
-    QHBoxLayout *tableChartLayout = new QHBoxLayout;
-
-    //////////////////////////////////////
-    // layout for TableView
-
     QVBoxLayout *pressureTableLayout = new QVBoxLayout;
 
-    pressureTableModel_ = new QStandardItemModel(MINIMUM_ROW_NUMBER, 2, this);
-    pressureTableModel_->setHeaderData(0, Qt::Horizontal, "Czas [hh::mm]");
-    pressureTableModel_->setHeaderData(1, Qt::Horizontal, "Ciśnienie [mmHg]");
-    pressureTable_ = new QTableView();
-    pressureTable_->setModel(pressureTableModel_);
+    pressureTable_ = new PressureTable();
 
-    timeColumnDelegate_ = new TimeColumnDelegate(this);
-    numberColumnDelegate_ = new NumberColumnDelegate(this);
-    pressureTable_->setItemDelegateForColumn(0, timeColumnDelegate_);
-    pressureTable_->setItemDelegateForColumn(1, numberColumnDelegate_);
+    pressureTableLayout->addWidget(pressureTable_);
+    pressureTableLayout->addStretch();
+    pressureTableLayout->addLayout(setUpButtons());
 
+    connect(pressureTable_, &PressureTable::itemChanged, this, &Widget::tableDataChanged);
+
+    plotterChart = new Plotter;
+    mainLayout_->addSpacing(20);
+    mainLayout_->addLayout(pressureTableLayout);
+    mainLayout_->addWidget(plotterChart);
+}
+
+QHBoxLayout *Widget::setUpButtons()
+{
     QPixmap plusPixmap("../Charts/plus.png");
     QPixmap minusPixmap("../Charts/minus.png");
     QIcon plusIcon(plusPixmap);
@@ -58,31 +56,10 @@ void Widget::setView()
     buttonsLauout->addWidget(plusButton_);
     buttonsLauout->addWidget(minusButton_);
 
-    pressureTableLayout->addWidget(pressureTable_);
-    pressureTableLayout->addStretch();
-    pressureTableLayout->addLayout(buttonsLauout);
-
-
     connect(plusButton_, &QPushButton::clicked, this,  &Widget::addRow);
     connect(minusButton_, &QPushButton::clicked, this, &Widget::removeRow);
 
-    connect(pressureTableModel_, &QStandardItemModel::itemChanged, this, &Widget::tableDataChanged);
-
-    //////////////////////////////////////
-
-    plotterChart = new Plotter;
-
-//    QRect chartGeometry = pressureChartView_->geometry();
-//    chartGeometry.setWidth(chartGeometry.width() + 600);
-//    pressureChartView_->setGeometry(chartGeometry);
-
-    tableChartLayout->addSpacing(20);
-    //tableChartLayout->addStretch();
-    tableChartLayout->addLayout(pressureTableLayout);
-    tableChartLayout->addWidget(plotterChart);
-    //tableChartLayout->addStretch();
-
-    mainLayout_->addLayout(tableChartLayout);
+    return buttonsLauout;
 }
 
 void Widget::tableDataChanged(QStandardItem *item)
@@ -126,12 +103,11 @@ void Widget::tableDataChanged(QStandardItem *item)
 
 void Widget::addRow()
 {
-    pressureTableModel_->setRowCount(++currentNumberRows_);
+    pressureTable_->addRow();
 }
 
 void Widget::removeRow()
 {
-    if(currentNumberRows_ > MINIMUM_ROW_NUMBER)
-        pressureTableModel_->setRowCount(--currentNumberRows_);
+    pressureTable_->removeRow();
 }
 

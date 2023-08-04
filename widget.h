@@ -7,12 +7,8 @@
 #include <QPointF>
 
 class QBoxLayout;
-class QTableWidget;
 class Plotter;
-class TimeColumnDelegate;
-class NumberColumnDelegate;
-
-#define MINIMUM_ROW_NUMBER 2
+class PressureTable;
 
 class Widget : public QWidget
 {
@@ -23,20 +19,17 @@ public:
     ~Widget();
 
 private:
-    void setView();
+    void setupView();
+    QHBoxLayout* setUpButtons();
 
 private:
-    uint16_t currentNumberRows_;
     QBoxLayout *mainLayout_;
 
     // TableView
-    QTableView *pressureTable_;
+    PressureTable *pressureTable_;
     // QAbstractTableModel - todo
-    QStandardItemModel *pressureTableModel_;
     QPushButton *plusButton_;
     QPushButton *minusButton_;
-    TimeColumnDelegate *timeColumnDelegate_;
-    NumberColumnDelegate *numberColumnDelegate_;
 
     Plotter *plotterChart;
 
