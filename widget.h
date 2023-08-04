@@ -23,26 +23,10 @@ public:
 
 private:
     void setView();
-    void updateChart();
-
-    // walidacja czy wartość numeryczna (zamiana , (przecinka) na . (kropka))
-    bool validateCellDoubleValue(QString &s, double &value);
-
-    // przegląd całej tabeli - wpisanie każdego kompletnego wiersza do listy
-    void fulfillList();
 
 private:
-    double minYValue_;
-    double maxYValue_;
-    bool firstAppend;
-    uint16_t currentRowNumber_;
-
+    uint16_t currentNumberRows_;
     QBoxLayout *mainLayout_;
-    QTableWidget *pressureTimeTable_;
-    QChart *pressureChart_;
-    QLineSeries *pressureSeries_;
-    QChartView *pressureChartView_;
-    QDateTimeAxis *axisX_;
 
     // TableView
     QTableView *pressureTable_;
@@ -57,9 +41,6 @@ private:
     QVector<QPoint> pointSeries_;
 
 private slots:
-    void addSeriesElement(int row, int column);
-    void timeItemChanged(QTableWidgetItem* item);
-
     void tableDataChanged(QStandardItem *item);
 
     void addRow();
