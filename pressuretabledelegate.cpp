@@ -41,7 +41,7 @@ QWidget *NumberColumnDelegate::createEditor(QWidget *parent, const QStyleOptionV
 {
     QLineEdit *lineEdit = new QLineEdit(parent);
     // Set validator
-    QIntValidator *validator = new QIntValidator(600, 999, lineEdit);
+    QIntValidator *validator = new QIntValidator(600, 950, lineEdit);
     lineEdit->setValidator(validator);
     return lineEdit;
 }

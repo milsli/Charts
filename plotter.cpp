@@ -124,7 +124,8 @@ void Plotter::drawGrid(QPainter *painter)
                                / settings.numXTicks);
         int16_t label = settings.minX + (i * settings.spanX()
                                         / settings.numXTicks);
-        QString timeLabel = QString::number(label / 60) + ":" + QString::number(label % 60);
+//        QString timeLabel = QString("%1:%2").arg(static_cast<int>(label / 60), 2, 10, '0').arg(static_cast<int>(label % 60), 2, 10, '0');   // = QString::number(label / 60) + ":" + QString::number(label % 60);
+        QString timeLabel = QString("%1:%2").arg(static_cast<int>(label / 60), 2, 10, QLatin1Char('0')).arg(static_cast<int>(label % 60), 2, 10, QLatin1Char('0'));
 
         painter->setPen(quiteDark);
         painter->drawLine(x, rect.top(), x, rect.bottom());
