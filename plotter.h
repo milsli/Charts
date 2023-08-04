@@ -16,7 +16,6 @@ class Plotter : public QWidget
     {
     public:
         PlotSettings();
-        void scroll(int dx, int dy);
         double spanX() const;
         double spanY() const;
 
@@ -26,9 +25,6 @@ class Plotter : public QWidget
         double minY;
         double maxY;
         int numYTicks;
-    private:
-        static void adjustAxis(double &min, double &max, int &numTicks);
-
     };
 
 public:
@@ -36,7 +32,6 @@ public:
 
     void setPlotSettings(const PlotSettings &settings);
     void setCurveData(int id, const QVector<QPoint> &data);
-    void clearCurve(int id);
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
@@ -45,17 +40,15 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
-    void updateRubberBandRegion();
     void refreshPixmap();
     void drawGrid(QPainter *painter);
     void drawCurves(QPainter *painter);
     void updateScale(double minX, double maxX, double minY, double maxY);
 
 private:
-    enum { Margin = 50 };
+    enum { Margin = 60 };
     QMap<int, QVector<QPoint> > curveMap;
     PlotSettings plotSettings_;
-    bool rubberBandIsShown;
     QRect rubberBandRect;
     QPixmap pixmap;
 

@@ -13,7 +13,6 @@ Plotter::Plotter(QWidget *parent)
     // setAutoFillBackground(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setFocusPolicy(Qt::StrongFocus);
-    rubberBandIsShown = false;
     setPlotSettings(PlotSettings());
 }
 
@@ -47,12 +46,6 @@ void Plotter::setCurveData(int id, const QVector<QPoint> &data)
     refreshPixmap();
 }
 
-void Plotter::clearCurve(int id)
-{
-    curveMap.remove(id);
-    refreshPixmap();
-}
-
 QSize Plotter::minimumSizeHint() const
 {
     return QSize(6 * Margin, 4 * Margin);
@@ -60,20 +53,13 @@ QSize Plotter::minimumSizeHint() const
 
 QSize Plotter::sizeHint() const
 {
-    return QSize(12 * Margin, 8 * Margin);
+    return QSize(18 * Margin, 8 * Margin);
 }
 
 void Plotter::paintEvent(QPaintEvent *event)
 {
     QStylePainter painter(this);
     painter.drawPixmap(0, 0, pixmap);
-
-    if (rubberBandIsShown)
-    {
-        painter.setPen(palette().light().color());
-        painter.drawRect(rubberBandRect.normalized()
-                             .adjusted(0, 0, -1, -1));
-    }
 
     if (hasFocus())
     {
@@ -87,15 +73,6 @@ void Plotter::paintEvent(QPaintEvent *event)
 void Plotter::resizeEvent(QResizeEvent *event)
 {
     refreshPixmap();
-}
-
-void Plotter::updateRubberBandRegion()
-{
-    QRect rect = rubberBandRect.normalized();
-    update(rect.left(), rect.top(), rect.width(), 1);
-    update(rect.left(), rect.top(), 1, rect.height());
-    update(rect.left(), rect.bottom(), rect.width(), 1);
-    update(rect.right(), rect.top(), 1, rect.height());
 }
 
 void Plotter::refreshPixmap()
@@ -124,7 +101,7 @@ void Plotter::drawGrid(QPainter *painter)
                                / settings.numXTicks);
         int16_t label = settings.minX + (i * settings.spanX()
                                         / settings.numXTicks);
-//        QString timeLabel = QString("%1:%2").arg(static_cast<int>(label / 60), 2, 10, '0').arg(static_cast<int>(label % 60), 2, 10, '0');   // = QString::number(label / 60) + ":" + QString::number(label % 60);
+
         QString timeLabel = QString("%1:%2").arg(static_cast<int>(label / 60), 2, 10, QLatin1Char('0')).arg(static_cast<int>(label % 60), 2, 10, QLatin1Char('0'));
 
         painter->setPen(quiteDark);
@@ -148,6 +125,15 @@ void Plotter::drawGrid(QPainter *painter)
                           Qt::AlignRight | Qt::AlignVCenter,
                           QString::number(label));
     }
+
+    painter->drawText(rect.center().rx() - 20, rect.bottom() + 25, 80, 12, Qt::AlignRight | Qt::AlignVCenter, "czas [hh:mm]");
+
+    painter->translate(10, rect.center().ry());
+    painter->rotate(-90);
+    painter->drawText(5, 5, 110, 12, Qt::AlignRight | Qt::AlignVCenter, "ciśnienie [mmHg]");
+    painter->rotate(90);
+    painter->translate(-10, -rect.center().ry());
+
     painter->drawRect(rect.adjusted(0, 0, -1, -1));
 }
 
@@ -200,33 +186,7 @@ Plotter::PlotSettings::PlotSettings()
     numYTicks = 5;
 }
 
-void Plotter::PlotSettings::scroll(int dx, int dy)
-{
-    double stepX = spanX() / numXTicks;
-    minX += dx * stepX;
-    maxX += dx * stepX;
-    double stepY = spanY() / numYTicks;
-    minY += dy * stepY;
-    maxY += dy * stepY;
-}
-
 double Plotter::PlotSettings::spanX() const { return maxX - minX; }
 
 double Plotter::PlotSettings::spanY() const { return maxY - minY; }
 
-void Plotter::PlotSettings::adjustAxis(double &min, double &max, int &numTicks)
-{
-    const int MinTicks = 4;
-    double grossStep = (max - min) / MinTicks;
-    double step = pow(10.0, floor(log10(grossStep)));
-    if (5 * step < grossStep) {
-        step *= 5;
-    } else if (2 * step < grossStep) {
-        step *= 2;
-    }
-    numTicks = int(ceil(max / step) - floor(min / step));
-    if (numTicks < MinTicks)
-        numTicks = MinTicks;
-    min = floor(min / step) * step;
-    max = ceil(max / step) * step;
-}
