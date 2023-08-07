@@ -35,8 +35,8 @@ void Widget::setupView()
 
 QHBoxLayout *Widget::setUpButtons()
 {
-    QPixmap plusPixmap("../Charts/plus.png");
-    QPixmap minusPixmap("../Charts/minus.png");
+    QPixmap plusPixmap("../TimeTableWidget/plus.png");
+    QPixmap minusPixmap("../TimeTableWidget/minus.png");
     QIcon plusIcon(plusPixmap);
     QIcon minusIcon(minusPixmap);
 

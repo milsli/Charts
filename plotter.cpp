@@ -126,7 +126,7 @@ void Plotter::drawGrid(QPainter *painter)
                           QString::number(label));
     }
 
-    painter->drawText(rect.center().rx() - 20, rect.bottom() + 25, 80, 12, Qt::AlignRight | Qt::AlignVCenter, "czas [hh:mm]");
+    painter->drawText(rect.center().rx() - 20, rect.bottom() + 25, 80, 12, Qt::AlignRight | Qt::AlignVCenter, "czas [mm:ss]");
 
     painter->translate(10, rect.center().ry());
     painter->rotate(-90);
@@ -179,10 +179,10 @@ void Plotter::updateScale(double minX, double maxX, double minY, double maxY)
 Plotter::PlotSettings::PlotSettings()
 {
     minX = 0.0;
-    maxX = 100.0;
+    maxX = 1200.0;
     numXTicks = 5;
-    minY = 720.0;
-    maxY = 820.0;
+    minY = 700.0;
+    maxY = 900.0;
     numYTicks = 5;
 }
 
