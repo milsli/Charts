@@ -13,6 +13,13 @@ PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
 void PressureTable::addRow()
 {
     pressureTableModel_->setRowCount(++currentNumberRows_);
+
+    QModelIndex ii = pressureTableModel_->index(currentNumberRows_ - 1, 0);
+
+
+    edit(ii);
+
+
 }
 
 void PressureTable::removeRow()
