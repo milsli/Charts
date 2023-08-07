@@ -21,6 +21,7 @@ public:
 private:
     void setupView();
     QHBoxLayout* setUpButtons();
+    bool timeColumnValidation();
 
 private:
     QBoxLayout *mainLayout_;

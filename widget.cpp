@@ -61,10 +61,30 @@ QHBoxLayout *Widget::setUpButtons()
     return buttonsLauout;
 }
 
+bool Widget::timeColumnValidation()
+{
+    int size =  pointSeries_.size();
+    for(int i = 1; i < size; ++i)
+    {
+        if(pointSeries_[i-1].rx() > pointSeries_[i].rx())
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Nieprawidłowa sekwencja w kolumnie czas");
+                msgBox.exec();
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void Widget::tableDataChanged(QStandardItem *item)
 {
         // todo: sprawdzenie czy wartość wykasowana
         // todo: weryfikacja poprawności czasu
+
+    int serieSize = pointSeries_.size();
     int column = item->column();
     int row = item->row();
 
@@ -78,7 +98,6 @@ void Widget::tableDataChanged(QStandardItem *item)
     else if(column == 1)
         pressure = item->data(Qt::DisplayRole).toInt();
 
-    int serieSize = pointSeries_.size();
     if(row == serieSize)    // new point
     {
         QPoint newPoint {iTime, pressure};
@@ -92,6 +111,9 @@ void Widget::tableDataChanged(QStandardItem *item)
         if(column == 1)
             point[row].setY(pressure);
     }
+
+    if(!timeColumnValidation())
+        return;
 
     if(serieSize >= 2)
     {
