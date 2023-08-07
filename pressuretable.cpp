@@ -28,6 +28,11 @@ QSize PressureTable::sizeHint() const
     return QSize(parentRectSize.width() / 10, parentRectSize.height());
 }
 
+int PressureTable::rowCount()
+{
+    return pressureTableModel_->rowCount();
+}
+
 void PressureTable::setupModel()
 {
     pressureTableModel_ = new QStandardItemModel(MINIMUM_ROW_NUMBER, 2, this);

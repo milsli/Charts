@@ -124,7 +124,8 @@ void Widget::tableDataChanged(QStandardItem *item)
 
 void Widget::addRow()
 {
-    pressureTable_->addRow();
+    if(pressureTable_->rowCount() == pointSeries_.size())
+        pressureTable_->addRow();
 }
 
 void Widget::removeRow()

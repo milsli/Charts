@@ -18,6 +18,7 @@ public:
     void addRow();
     void removeRow();
     QSize sizeHint() const;
+    int rowCount();
 
 private:
     void setupModel();
