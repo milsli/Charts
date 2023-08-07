@@ -108,5 +108,10 @@ void Widget::addRow()
 void Widget::removeRow()
 {
     pressureTable_->removeRow();
+    if(pointSeries_.size() > 2)
+    {
+        pointSeries_.removeLast();
+        plotterChart->setCurveData(0, pointSeries_);
+    }
 }
 
