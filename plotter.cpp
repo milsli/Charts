@@ -163,7 +163,9 @@ void Plotter::drawCurves(QPainter *painter)
                                         / settings.spanY());
             polyline[j] = QPoint(x, y);
         }
-        painter->setPen(colorForIds[uint(id) % 6]);
+        QPen pen(colorForIds[uint(id) % 6]);
+        pen.setWidth(2);
+        painter->setPen(pen);
         painter->drawPolyline(polyline);
     }
 }

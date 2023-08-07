@@ -32,7 +32,7 @@ private:
     QPushButton *plusButton_;
     QPushButton *minusButton_;
 
-    Plotter *plotterChart;
+    Plotter *plotterChart_;
 
     QVector<QPoint> pointSeries_;
 

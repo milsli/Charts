@@ -19,6 +19,8 @@ public:
     void removeRow();
     QSize sizeHint() const;
     int rowCount();
+    bool emptyRow();
+    void initialValues();
 
 private:
     void setupModel();

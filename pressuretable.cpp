@@ -1,5 +1,6 @@
 #include "pressuretable.h"
 #include "pressuretabledelegate.h"
+#include "qdatetime.h"
 
 PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
     , currentNumberRows_(MINIMUM_ROW_NUMBER)
@@ -33,6 +34,17 @@ int PressureTable::rowCount()
     return pressureTableModel_->rowCount();
 }
 
+bool PressureTable::emptyRow()
+{
+    QStandardItem* timeItem = pressureTableModel_->item(currentNumberRows_ - 1, 0);
+    QStandardItem* pressureItem = pressureTableModel_->item(currentNumberRows_ - 1, 1);
+
+    if(timeItem == nullptr && pressureItem == nullptr)
+        return true;
+
+    return false;
+}
+
 void PressureTable::setupModel()
 {
     pressureTableModel_ = new QStandardItemModel(MINIMUM_ROW_NUMBER, 2, this);
@@ -50,4 +62,29 @@ void PressureTable::setupDelegates()
     numberColumnDelegate_ = new NumberColumnDelegate(this);
     this->setItemDelegateForColumn(0, timeColumnDelegate_);
     this->setItemDelegateForColumn(1, numberColumnDelegate_);
+}
+
+void PressureTable::initialValues()
+{
+    QStandardItem *timeItem = new QStandardItem();
+    QStandardItem *pressureItem = new QStandardItem();
+    QTime time0(0,0,0);
+
+    timeItem->setData(time0, Qt::DisplayRole);
+    pressureItem->setData(760, Qt::DisplayRole);
+
+    pressureTableModel_->setItem(0, 0, timeItem);
+    pressureTableModel_->setItem(0, 1, pressureItem);
+
+    timeItem = new QStandardItem();
+    pressureItem = new QStandardItem();
+
+    QTime time1(0,10, 0);
+    timeItem->setData(time1, Qt::DisplayRole);
+
+    pressureItem = new QStandardItem();
+    pressureItem->setData(750, Qt::DisplayRole);
+
+    pressureTableModel_->setItem(1, 0, timeItem);
+    pressureTableModel_->setItem(1, 1, pressureItem);
 }

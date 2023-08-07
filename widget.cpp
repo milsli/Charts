@@ -18,6 +18,8 @@ Widget::~Widget()
 
 void Widget::setupView()
 {
+    plotterChart_ = new Plotter;
+
     QVBoxLayout *pressureTableLayout = new QVBoxLayout;
     pressureTable_ = new PressureTable(this);
 
@@ -27,10 +29,11 @@ void Widget::setupView()
 
     connect(pressureTable_, &PressureTable::itemChanged, this, &Widget::tableDataChanged);
 
-    plotterChart = new Plotter;
+    pressureTable_->initialValues();
+
     mainLayout_->addSpacing(20);
     mainLayout_->addLayout(pressureTableLayout);
-    mainLayout_->addWidget(plotterChart);
+    mainLayout_->addWidget(plotterChart_);
 }
 
 QHBoxLayout *Widget::setUpButtons()
@@ -118,7 +121,7 @@ void Widget::tableDataChanged(QStandardItem *item)
     if(serieSize >= 2)
     {
         if(pointSeries_.size() > 1 && pointSeries_.at(row).x() != 0 && pointSeries_.at(row).y() != 0)
-            plotterChart->setCurveData(0, pointSeries_);
+            plotterChart_->setCurveData(0, pointSeries_);
     }
 }
 
@@ -130,11 +133,12 @@ void Widget::addRow()
 
 void Widget::removeRow()
 {
+    bool emptyRow = pressureTable_->emptyRow();
     pressureTable_->removeRow();
-    if(pointSeries_.size() > 2)
+    if(pointSeries_.size() > 2 && !emptyRow)
     {
         pointSeries_.removeLast();
-        plotterChart->setCurveData(0, pointSeries_);
+        plotterChart_->setCurveData(0, pointSeries_);
     }
 }
 
