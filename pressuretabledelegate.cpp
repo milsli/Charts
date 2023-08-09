@@ -2,6 +2,10 @@
 #include <QTimeEdit>
 #include <QLineEdit>
 
+
+
+#include <QDebug>>
+
 TimeColumnDelegate::TimeColumnDelegate(QObject *parent)
     : QStyledItemDelegate{parent}
 {
@@ -11,7 +15,7 @@ TimeColumnDelegate::TimeColumnDelegate(QObject *parent)
 QWidget *TimeColumnDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QTimeEdit *timeEdit = new QTimeEdit(parent);
-    timeEdit->setDisplayFormat("hh:mm");
+    timeEdit->setDisplayFormat("mm:ss");
     timeEdit->setAlignment(Qt::AlignCenter);
     return timeEdit;
 }
@@ -21,12 +25,16 @@ void TimeColumnDelegate::setEditorData(QWidget *editor, const QModelIndex &index
     QTime time = index.model()->data(index, Qt::DisplayRole).toTime();
     QTimeEdit *timeEdit = static_cast<QTimeEdit *>(editor);
     timeEdit->setTime(time);
+
+    qDebug() << "Editor Data: Hour: " << time.hour() << "  minute: " << time.minute() << "  seconds " << time.second();
 }
 
 void TimeColumnDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     QTimeEdit *timeEdit = static_cast<QTimeEdit*>(editor);
     model->setData(index, timeEdit->time(), Qt::EditRole);
+
+    qDebug() << "Model Data: Hour: " << timeEdit->time().hour() << "  minute: " << timeEdit->time().minute() << "  seconds " << timeEdit->time().second();
 }
 
 void TimeColumnDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const

@@ -21,9 +21,23 @@ void Widget::setupView()
     plotterChart_ = new Plotter;
 
     QVBoxLayout *pressureTableLayout = new QVBoxLayout;
-    pressureTable_ = new PressureTable(this);
+    pressureTable_ = new PressureTable(2,2,this);
 
     pressureTableLayout->addWidget(pressureTable_);
+
+    ///////////////
+    ///  TRIAL
+
+
+    timeEdit_ = new QTimeEdit;
+    QTime t(1,0,10,0);
+    timeEdit_->setTime(t);
+    timeEdit_->setDisplayFormat("mm:ss");
+    pressureTableLayout->addWidget(timeEdit_);
+
+
+    //////////////
+
 
     pressureTableLayout->addLayout(setUpButtons());
 
@@ -93,7 +107,7 @@ void Widget::tableDataChanged(QStandardItem *item)
     if(column == 0)
     {
         QTime time = item->data(Qt::DisplayRole).toTime();
-        iTime = time.hour() * 60 + time.minute();
+        iTime = time.minute() * 60 + time.second();
 
 //        if(iTime > 1439)
 //            QMessageBox::warning(this, tr("Duża wartość czasu"),
@@ -129,6 +143,8 @@ void Widget::tableDataChanged(QStandardItem *item)
 
 void Widget::addRow()
 {
+    QTime t = timeEdit_->time();
+
     if(pressureTable_->rowCount() == pointSeries_.size())
         pressureTable_->addRow();
 }

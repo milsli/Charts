@@ -2,7 +2,7 @@
 #define PRESSURETABLE_H
 
 #include <QStandardItemModel>
-#include <QTableView>
+#include <QTableWidget>
 
 #define MINIMUM_ROW_NUMBER 2
 
@@ -12,11 +12,12 @@ class NumberColumnDelegate;
 const QString timeColumnTitle = "Czas [mm:ss]";
 const QString pressureColumnTitle = "Ciśnienie [mmHg]";
 
-class PressureTable : public QTableView
+class PressureTable : public QTableWidget
 {
     Q_OBJECT
 public:
     PressureTable(QWidget *parent = nullptr);
+    PressureTable(int rows, int columns, QWidget *parent = nullptr);
 
     void addRow();
     void removeRow();

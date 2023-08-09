@@ -35,6 +35,16 @@ private:
     Plotter *plotterChart_;
     QVector<QPoint> pointSeries_;
 
+
+
+    ///////////////
+    ///  TRIAL
+
+
+    QTimeEdit *timeEdit_;
+
+    //////////////
+
 private slots:
     void tableDataChanged(QStandardItem *item);
 

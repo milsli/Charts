@@ -3,8 +3,9 @@
 #include "qdatetime.h"
 #include "qevent.h"
 #include "qheaderview.h"
+#include <QTimeEdit>
 
-PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
+PressureTable::PressureTable(int rows, int columns, QWidget *parent) : QTableWidget(rows, columns, parent)
     , currentNumberRows_(MINIMUM_ROW_NUMBER)
 {
     setupModel();
@@ -75,9 +76,9 @@ void PressureTable::setupModel()
     pressureTableModel_->setHeaderData(0, Qt::Horizontal, timeColumnTitle);
     pressureTableModel_->setHeaderData(1, Qt::Horizontal, pressureColumnTitle);
 
-    connect(pressureTableModel_, &QStandardItemModel::itemChanged, this, &PressureTable::itemChanged);
+//    connect(pressureTableModel_, &QStandardItemModel::itemChanged, this, &PressureTable::itemChanged);
 
-    this->setModel(pressureTableModel_);
+//    this->setModel(pressureTableModel_);
 }
 
 void PressureTable::setupDelegates()
@@ -103,9 +104,17 @@ void PressureTable::initialValues()
 {
     QStandardItem *timeItem = new QStandardItem();
     QStandardItem *pressureItem = new QStandardItem();
-    QTime time0(0,0,0);
 
-    timeItem->setData(time0, Qt::DisplayRole);
+
+    QTime time0(0, 0, 10, 0);
+
+
+    QTimeEdit *tEdit = new QTimeEdit(time0);
+    tEdit->setDisplayFormat("mm:ss");
+    setCellWidget(0,0,tEdit);
+
+
+    timeItem->setData(QVariant(time0), Qt::DisplayRole);
     pressureItem->setData(760, Qt::DisplayRole);
 
     pressureTableModel_->setItem(0, 0, timeItem);
@@ -114,8 +123,8 @@ void PressureTable::initialValues()
     timeItem = new QStandardItem();
     pressureItem = new QStandardItem();
 
-    QTime time1(0, 10, 00);
-    timeItem->setData(time1, Qt::DisplayRole);
+    QTime time1(0, 0, 10, 0);
+    timeItem->setData(QVariant(time1), Qt::DisplayRole);
 
     pressureItem = new QStandardItem();
     pressureItem->setData(750, Qt::DisplayRole);
