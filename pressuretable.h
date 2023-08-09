@@ -9,6 +9,9 @@
 class TimeColumnDelegate;
 class NumberColumnDelegate;
 
+const QString timeColumnTitle = "Czas [mm:ss]";
+const QString pressureColumnTitle = "Ciśnienie [mmHg]";
+
 class PressureTable : public QTableView
 {
     Q_OBJECT
@@ -23,6 +26,7 @@ public:
     void initialValues();
 
 private:
+    void setupView();
     void setupModel();
     void setupDelegates();
 

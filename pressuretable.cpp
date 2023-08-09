@@ -1,22 +1,30 @@
 #include "pressuretable.h"
 #include "pressuretabledelegate.h"
 #include "qdatetime.h"
+#include "qheaderview.h"
 
 PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
     , currentNumberRows_(MINIMUM_ROW_NUMBER)
 {
-    setMaximumWidth(300);   // todo - zrobić to po bożemu
     setupModel();
+    setupView();
     setupDelegates();
 }
 
 void PressureTable::addRow()
 {
     int difference = timeDiff();
+
+    QModelIndex rowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
+    QTime time = pressureTableModel_->data(rowIndex).toTime();
+    time = time.addSecs(difference);
+
     pressureTableModel_->setRowCount(++currentNumberRows_);
 
-    QModelIndex newRowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-    edit(newRowIndex);
+    rowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
+    pressureTableModel_->setData(rowIndex, time);
+
+    edit(rowIndex);
 }
 
 void PressureTable::removeRow()
@@ -49,11 +57,24 @@ bool PressureTable::emptyRow()
     return false;
 }
 
+void PressureTable::setupView()
+{
+    //setMaximumWidth(300);   // todo - zrobić to po bożemu
+
+    int timeColumnWidth = fontMetrics().horizontalAdvance(timeColumnTitle) + 20;
+    int pressureColumnWidth = fontMetrics().horizontalAdvance(pressureColumnTitle) + 30;
+
+    setColumnWidth(0, timeColumnWidth);
+    setColumnWidth(1, pressureColumnWidth);
+    setMaximumWidth(timeColumnWidth + pressureColumnWidth + verticalHeader()->width() + 1);
+    setMinimumWidth(timeColumnWidth + pressureColumnWidth + verticalHeader()->width());
+}
+
 void PressureTable::setupModel()
 {
     pressureTableModel_ = new QStandardItemModel(MINIMUM_ROW_NUMBER, 2, this);
-    pressureTableModel_->setHeaderData(0, Qt::Horizontal, "Czas [mm:ss]");
-    pressureTableModel_->setHeaderData(1, Qt::Horizontal, "Ciśnienie [mmHg]");
+    pressureTableModel_->setHeaderData(0, Qt::Horizontal, timeColumnTitle);
+    pressureTableModel_->setHeaderData(1, Qt::Horizontal, pressureColumnTitle);
 
     connect(pressureTableModel_, &QStandardItemModel::itemChanged, this, &PressureTable::itemChanged);
 
@@ -72,10 +93,8 @@ int PressureTable::timeDiff()
 {
     QModelIndex previousRowIndex = pressureTableModel_->index(currentNumberRows_ - 2, 0);
     QModelIndex currentRowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-
     QTime previousTime = previousRowIndex.data().toTime();
     QTime currentTime = currentRowIndex.data().toTime();
-
     int diff = previousTime.secsTo(currentTime);
 
     return diff;
