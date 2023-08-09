@@ -24,7 +24,7 @@ void Widget::setupView()
     pressureTable_ = new PressureTable(this);
 
     pressureTableLayout->addWidget(pressureTable_);
-    pressureTableLayout->addStretch();
+
     pressureTableLayout->addLayout(setUpButtons());
 
     connect(pressureTable_, &PressureTable::itemChanged, this, &Widget::tableDataChanged);
@@ -84,9 +84,6 @@ bool Widget::timeColumnValidation()
 
 void Widget::tableDataChanged(QStandardItem *item)
 {
-        // todo: sprawdzenie czy wartość wykasowana
-        // todo: weryfikacja poprawności czasu
-
     int serieSize = pointSeries_.size();
     int column = item->column();
     int row = item->row();
@@ -97,6 +94,11 @@ void Widget::tableDataChanged(QStandardItem *item)
     {
         QTime time = item->data(Qt::DisplayRole).toTime();
         iTime = time.hour() * 60 + time.minute();
+
+//        if(iTime > 1439)
+//            QMessageBox::warning(this, tr("Duża wartość czasu"),
+//                                 tr("Maksymalny czas eksperymentu to 23:59 sekund"));
+
     }
     else if(column == 1)
         pressure = item->data(Qt::DisplayRole).toInt();

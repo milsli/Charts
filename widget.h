@@ -33,7 +33,6 @@ private:
     QPushButton *minusButton_;
 
     Plotter *plotterChart_;
-
     QVector<QPoint> pointSeries_;
 
 private slots:
