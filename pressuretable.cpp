@@ -114,7 +114,7 @@ void PressureTable::initialValues()
     timeItem = new QStandardItem();
     pressureItem = new QStandardItem();
 
-    QTime time1(0, 10, 00);
+    QTime time1(0, 0, 10);
     timeItem->setData(time1, Qt::DisplayRole);
 
     pressureItem = new QStandardItem();

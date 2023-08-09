@@ -22,6 +22,11 @@ public:
     // Give the SpinBox the info on size and location
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
+//    void paint(QPainter *painter,
+//               const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
+    virtual QString displayText(const QVariant &value, const QLocale &locale) const;
+
 };
 
 class NumberColumnDelegate :  public QStyledItemDelegate
