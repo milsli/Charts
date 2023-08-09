@@ -96,7 +96,7 @@ void Widget::tableDataChanged(QStandardItem *item)
     if(column == 0)
     {
         QTime time = item->data(Qt::DisplayRole).toTime();
-        iTime = time.hour() + time.minute();
+        iTime = time.hour() * 60 + time.minute();
     }
     else if(column == 1)
         pressure = item->data(Qt::DisplayRole).toInt();

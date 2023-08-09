@@ -1,6 +1,7 @@
 #include "pressuretable.h"
 #include "pressuretabledelegate.h"
 #include "qdatetime.h"
+#include "qevent.h"
 #include "qheaderview.h"
 
 PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
@@ -24,7 +25,7 @@ void PressureTable::addRow()
     rowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
     pressureTableModel_->setData(rowIndex, time);
 
-    edit(rowIndex);
+   // edit(rowIndex);
 }
 
 void PressureTable::removeRow()
@@ -59,14 +60,12 @@ bool PressureTable::emptyRow()
 
 void PressureTable::setupView()
 {
-    //setMaximumWidth(300);   // todo - zrobić to po bożemu
-
     int timeColumnWidth = fontMetrics().horizontalAdvance(timeColumnTitle) + 20;
     int pressureColumnWidth = fontMetrics().horizontalAdvance(pressureColumnTitle) + 30;
 
     setColumnWidth(0, timeColumnWidth);
     setColumnWidth(1, pressureColumnWidth);
-    setMaximumWidth(timeColumnWidth + pressureColumnWidth + verticalHeader()->width() + 1);
+    setMaximumWidth(timeColumnWidth + pressureColumnWidth + verticalHeader()->width() + 5);
     setMinimumWidth(timeColumnWidth + pressureColumnWidth + verticalHeader()->width());
 }
 
@@ -123,4 +122,9 @@ void PressureTable::initialValues()
 
     pressureTableModel_->setItem(1, 0, timeItem);
     pressureTableModel_->setItem(1, 1, pressureItem);
+}
+
+void PressureTable::resizeEvent(QResizeEvent *event)
+{
+    setMaximumHeight(parentWidget()->height());
 }

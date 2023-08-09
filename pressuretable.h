@@ -25,6 +25,9 @@ public:
     bool emptyRow();
     void initialValues();
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 private:
     void setupView();
     void setupModel();
