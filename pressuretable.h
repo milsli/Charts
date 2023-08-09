@@ -26,6 +26,11 @@ private:
     void setupModel();
     void setupDelegates();
 
+    /*
+     * time difference between the previous rows
+    */
+    int timeDiff();
+
 private:
     uint16_t currentNumberRows_;
     QStandardItemModel *pressureTableModel_;

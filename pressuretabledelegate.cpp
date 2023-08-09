@@ -11,13 +11,14 @@ TimeColumnDelegate::TimeColumnDelegate(QObject *parent)
 QWidget *TimeColumnDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QTimeEdit *timeEdit = new QTimeEdit(parent);
+    timeEdit->setDisplayFormat("hh:mm");
     timeEdit->setAlignment(Qt::AlignCenter);
     return timeEdit;
 }
 
 void TimeColumnDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    QTime time = index.model()->data(index, Qt::DisplayRole).toTime();    
+    QTime time = index.model()->data(index, Qt::DisplayRole).toTime();
     QTimeEdit *timeEdit = static_cast<QTimeEdit *>(editor);
     timeEdit->setTime(time);
 }
@@ -25,7 +26,7 @@ void TimeColumnDelegate::setEditorData(QWidget *editor, const QModelIndex &index
 void TimeColumnDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     QTimeEdit *timeEdit = static_cast<QTimeEdit*>(editor);
-    model->setData(index, timeEdit->time().toString(QString("hh:mm")), Qt::EditRole);
+    model->setData(index, timeEdit->time(), Qt::EditRole);
 }
 
 void TimeColumnDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -40,7 +41,6 @@ NumberColumnDelegate::NumberColumnDelegate(QObject *parent)
 QWidget *NumberColumnDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QLineEdit *lineEdit = new QLineEdit(parent);
-    // Set validator
     QIntValidator *validator = new QIntValidator(600, 950, lineEdit);
     lineEdit->setValidator(validator);
     return lineEdit;
@@ -56,8 +56,6 @@ void NumberColumnDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
 void NumberColumnDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     QLineEdit *lineEdit = static_cast<QLineEdit*>(editor);
-//    QIntValidator *validator = new QIntValidator(0, 9, lineEdit);
-//    lineEdit->setValidator(validator);
     model->setData(index, lineEdit->text().toInt(), Qt::EditRole);
 }
 

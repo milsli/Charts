@@ -12,14 +12,11 @@ PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
 
 void PressureTable::addRow()
 {
+    int difference = timeDiff();
     pressureTableModel_->setRowCount(++currentNumberRows_);
 
-    QModelIndex ii = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-
-
-    edit(ii);
-
-
+    QModelIndex newRowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
+    edit(newRowIndex);
 }
 
 void PressureTable::removeRow()
@@ -71,6 +68,19 @@ void PressureTable::setupDelegates()
     this->setItemDelegateForColumn(1, numberColumnDelegate_);
 }
 
+int PressureTable::timeDiff()
+{
+    QModelIndex previousRowIndex = pressureTableModel_->index(currentNumberRows_ - 2, 0);
+    QModelIndex currentRowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
+
+    QTime previousTime = previousRowIndex.data().toTime();
+    QTime currentTime = currentRowIndex.data().toTime();
+
+    int diff = previousTime.secsTo(currentTime);
+
+    return diff;
+}
+
 void PressureTable::initialValues()
 {
     QStandardItem *timeItem = new QStandardItem();
@@ -86,7 +96,7 @@ void PressureTable::initialValues()
     timeItem = new QStandardItem();
     pressureItem = new QStandardItem();
 
-    QTime time1(0,10, 0);
+    QTime time1(0, 10, 00);
     timeItem->setData(time1, Qt::DisplayRole);
 
     pressureItem = new QStandardItem();

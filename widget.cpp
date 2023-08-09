@@ -38,8 +38,8 @@ void Widget::setupView()
 
 QHBoxLayout *Widget::setUpButtons()
 {
-    QPixmap plusPixmap("../TimeTableWidget/plus.png");
-    QPixmap minusPixmap("../TimeTableWidget/minus.png");
+    QPixmap plusPixmap("../Charts/plus.png");
+    QPixmap minusPixmap("../Charts/minus.png");
     QIcon plusIcon(plusPixmap);
     QIcon minusIcon(minusPixmap);
 
@@ -96,7 +96,7 @@ void Widget::tableDataChanged(QStandardItem *item)
     if(column == 0)
     {
         QTime time = item->data(Qt::DisplayRole).toTime();
-        iTime = time.hour() * 60 + time.minute();
+        iTime = time.hour() + time.minute();
     }
     else if(column == 1)
         pressure = item->data(Qt::DisplayRole).toInt();
