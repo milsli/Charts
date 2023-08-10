@@ -21,7 +21,7 @@ void Widget::setupView()
     plotterChart_ = new Plotter;
 
     QVBoxLayout *pressureTableLayout = new QVBoxLayout;
-    pressureTable_ = new PressureTable(this);
+    pressureTable_ = new PressureTable(2, 2, this);
 
     pressureTableLayout->addWidget(pressureTable_);
     pressureTableLayout->addLayout(setUpButtons());
@@ -80,7 +80,7 @@ bool Widget::timeColumnValidation()
     return true;
 }
 
-void Widget::tableDataChanged(QStandardItem *item)
+void Widget::tableDataChanged(QTableWidgetItem *item)
 {
     int serieSize = pointSeries_.size();
     int column = item->column();
@@ -131,9 +131,8 @@ void Widget::addRow()
 
 void Widget::removeRow()
 {
-    bool emptyRow = pressureTable_->emptyRow();
     pressureTable_->removeRow();
-    if(pointSeries_.size() > 2 && !emptyRow)
+    if(pointSeries_.size() > 2)
     {
         pointSeries_.removeLast();
         plotterChart_->setCurveData(0, pointSeries_);

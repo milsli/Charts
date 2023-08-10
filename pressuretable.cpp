@@ -4,10 +4,9 @@
 #include "qevent.h"
 #include "qheaderview.h"
 
-PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
+PressureTable::PressureTable(int rows, int columns, QWidget *parent) : QTableWidget(rows, columns, parent)
     , currentNumberRows_(MINIMUM_ROW_NUMBER)
 {
-    setupModel();
     setupView();
     setupDelegates();
 }
@@ -16,19 +15,17 @@ bool PressureTable::addRow()
 {
     int difference = timeDiff();
 
-    QModelIndex timeCellIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-    QTime time = pressureTableModel_->data(timeCellIndex).toTime();
+    QTableWidgetItem *cell = item(currentNumberRows_ - 1, 0);
+    QTime time = cell->data(Qt::DisplayRole).toTime();
     time = time.addSecs(difference);
 
     if(time.hour() > 0)
         return false;
 
-    pressureTableModel_->setRowCount(++currentNumberRows_);
+    setRowCount(++currentNumberRows_);
 
-    timeCellIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-    pressureTableModel_->setData(timeCellIndex, time);
-
-    QModelIndex pressureCellIndex = pressureTableModel_->index(currentNumberRows_ - 1, 1);
+    setItem(currentNumberRows_ - 1, 0, new QTableWidgetItem(time.toString("hh:mm:ss")));
+    QModelIndex pressureCellIndex = model()->index(currentNumberRows_ - 1, 1);
     edit(pressureCellIndex);
 
     return true;
@@ -37,7 +34,7 @@ bool PressureTable::addRow()
 void PressureTable::removeRow()
 {
     if(currentNumberRows_ > MINIMUM_ROW_NUMBER)
-        pressureTableModel_->setRowCount(--currentNumberRows_);
+        setRowCount(--currentNumberRows_);
 }
 
 QSize PressureTable::sizeHint() const
@@ -50,22 +47,14 @@ QSize PressureTable::sizeHint() const
 
 int PressureTable::rowCount()
 {
-    return pressureTableModel_->rowCount();
-}
-
-bool PressureTable::emptyRow()
-{
-    QStandardItem* timeItem = pressureTableModel_->item(currentNumberRows_ - 1, 0);
-    QStandardItem* pressureItem = pressureTableModel_->item(currentNumberRows_ - 1, 1);
-
-    if(timeItem == nullptr && pressureItem == nullptr)
-        return true;
-
-    return false;
+//    int r = rowCount(); - tu rzucany wyjątek. Nie wiadomo dlaczego
+    return currentNumberRows_;
 }
 
 void PressureTable::setupView()
 {
+    setHorizontalHeaderLabels(QStringList{timeColumnTitle, pressureColumnTitle});
+
     int timeColumnWidth = fontMetrics().horizontalAdvance(timeColumnTitle) + 20;
     int pressureColumnWidth = fontMetrics().horizontalAdvance(pressureColumnTitle) + 30;
 
@@ -73,17 +62,6 @@ void PressureTable::setupView()
     setColumnWidth(1, pressureColumnWidth);
     setMaximumWidth(timeColumnWidth + pressureColumnWidth + verticalHeader()->width() + 5);
     setMinimumWidth(timeColumnWidth + pressureColumnWidth + verticalHeader()->width());
-}
-
-void PressureTable::setupModel()
-{
-    pressureTableModel_ = new QStandardItemModel(MINIMUM_ROW_NUMBER, 2, this);
-    pressureTableModel_->setHeaderData(0, Qt::Horizontal, timeColumnTitle);
-    pressureTableModel_->setHeaderData(1, Qt::Horizontal, pressureColumnTitle);
-
-    connect(pressureTableModel_, &QStandardItemModel::itemChanged, this, &PressureTable::itemChanged);
-
-    this->setModel(pressureTableModel_);
 }
 
 void PressureTable::setupDelegates()
@@ -96,38 +74,21 @@ void PressureTable::setupDelegates()
 
 int PressureTable::timeDiff()
 {
-    QModelIndex previousRowIndex = pressureTableModel_->index(currentNumberRows_ - 2, 0);
-    QModelIndex currentRowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-    QTime previousTime = previousRowIndex.data().toTime();
-    QTime currentTime = currentRowIndex.data().toTime();
+    QTime previousTime = item(currentNumberRows_ - 2, 0)->data(Qt::DisplayRole).toTime();
+    QTime currentTime = item(currentNumberRows_ - 1, 0)->data(Qt::DisplayRole).toTime();
     int diff = previousTime.secsTo(currentTime);
-
     return diff;
 }
 
 void PressureTable::initialValues()
 {
-    QStandardItem *timeItem = new QStandardItem();
-    QStandardItem *pressureItem = new QStandardItem();
-    QTime time0(0,0,0);
-
-    timeItem->setData(time0, Qt::DisplayRole);
-    pressureItem->setData(760, Qt::DisplayRole);
-
-    pressureTableModel_->setItem(0, 0, timeItem);
-    pressureTableModel_->setItem(0, 1, pressureItem);
-
-    timeItem = new QStandardItem();
-    pressureItem = new QStandardItem();
+    QTime time(0, 0, 0);
+    setItem(0, 0, new QTableWidgetItem(time.toString("hh:mm:ss")));
+    setItem(0, 1, new QTableWidgetItem("760"));
 
     QTime time1(0, 0, 10);
-    timeItem->setData(time1, Qt::DisplayRole);
-
-    pressureItem = new QStandardItem();
-    pressureItem->setData(750, Qt::DisplayRole);
-
-    pressureTableModel_->setItem(1, 0, timeItem);
-    pressureTableModel_->setItem(1, 1, pressureItem);
+    setItem(1, 0, new QTableWidgetItem(time1.toString("hh:mm:ss")));
+    setItem(1, 1, new QTableWidgetItem("750"));
 }
 
 void PressureTable::resizeEvent(QResizeEvent *event)

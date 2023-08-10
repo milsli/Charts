@@ -1,8 +1,6 @@
 #include "pressuretabledelegate.h"
-#include "qstandarditemmodel.h"
 #include <QTimeEdit>
 #include <QLineEdit>
-#include <QPainter>>
 
 TimeColumnDelegate::TimeColumnDelegate(QObject *parent)
     : QStyledItemDelegate{parent}
