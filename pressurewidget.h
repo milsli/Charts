@@ -35,7 +35,7 @@ private:
     QVector<QPoint> pointSeries_;
 
 private slots:
-    void tableDataChanged(QStandardItem *item);
+    void tableDataChanged(QTableWidgetItem *item);
 
     void addRow();
     void removeRow();
