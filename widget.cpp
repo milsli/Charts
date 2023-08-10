@@ -93,12 +93,7 @@ void Widget::tableDataChanged(QStandardItem *item)
     if(column == 0)
     {
         QTime time = item->data(Qt::DisplayRole).toTime();
-        iTime = time.hour() * 60 + time.minute();
-
-//        if(iTime > 1439)
-//            QMessageBox::warning(this, tr("Duża wartość czasu"),
-//                                 tr("Maksymalny czas eksperymentu to 23:59 sekund"));
-
+        iTime = time.minute() * 60 + time.second();
     }
     else if(column == 1)
         pressure = item->data(Qt::DisplayRole).toInt();

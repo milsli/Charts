@@ -24,8 +24,6 @@ void PressureTable::addRow()
 
     rowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
     pressureTableModel_->setData(rowIndex, time);
-
-   // edit(rowIndex);
 }
 
 void PressureTable::removeRow()

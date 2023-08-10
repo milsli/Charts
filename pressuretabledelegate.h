@@ -22,9 +22,7 @@ public:
     // Give the SpinBox the info on size and location
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
-//    void paint(QPainter *painter,
-//               const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-
+    // displays text while not edit
     virtual QString displayText(const QVariant &value, const QLocale &locale) const;
 
 };

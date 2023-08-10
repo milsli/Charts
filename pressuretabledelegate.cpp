@@ -45,21 +45,6 @@ QString TimeColumnDelegate::displayText(const QVariant &value, const QLocale &lo
     return str;
 }
 
-//void TimeColumnDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-//{
-
-//    painter->save();
-
-//    const QStandardItemModel *mdl = static_cast<const QStandardItemModel*>(index.model());
-//    QVariant value = mdl->data(index);
-//    QTime tm = value.toTime();
-
-
-//    painter->drawText(option.rect , tm.toString("mm:ss"));
-
-//    painter->restore();
-//}
-
 NumberColumnDelegate::NumberColumnDelegate(QObject *parent)
 {
 }
