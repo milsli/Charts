@@ -12,7 +12,7 @@ PressureTable::PressureTable(QWidget *parent) : QTableView(parent)
     setupDelegates();
 }
 
-void PressureTable::addRow()
+bool PressureTable::addRow()
 {
     int difference = timeDiff();
 
@@ -20,10 +20,15 @@ void PressureTable::addRow()
     QTime time = pressureTableModel_->data(rowIndex).toTime();
     time = time.addSecs(difference);
 
+    if(time.hour() > 0)
+        return false;
+
     pressureTableModel_->setRowCount(++currentNumberRows_);
 
     rowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
     pressureTableModel_->setData(rowIndex, time);
+
+    return true;
 }
 
 void PressureTable::removeRow()

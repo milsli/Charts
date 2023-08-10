@@ -18,7 +18,7 @@ class PressureTable : public QTableView
 public:
     PressureTable(QWidget *parent = nullptr);
 
-    void addRow();
+    bool addRow();
     void removeRow();
     QSize sizeHint() const;
     int rowCount();

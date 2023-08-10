@@ -125,7 +125,11 @@ void Widget::tableDataChanged(QStandardItem *item)
 void Widget::addRow()
 {
     if(pressureTable_->rowCount() == pointSeries_.size())
-        pressureTable_->addRow();
+    {
+        if(!pressureTable_->addRow())
+            QMessageBox::warning(this, tr("Nowy wiersz"), tr("Niemożliwe dodanie nowego wiersza. Przekroczony limit czasowy"));
+
+    }
 }
 
 void Widget::removeRow()
