@@ -10,13 +10,13 @@ class QBoxLayout;
 class Plotter;
 class PressureTable;
 
-class Widget : public QWidget
+class PressureWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    Widget(QWidget *parent = nullptr);
-    ~Widget();
+    PressureWidget(QWidget *parent = nullptr);
+    ~PressureWidget();
 
 private:
     void setupView();
