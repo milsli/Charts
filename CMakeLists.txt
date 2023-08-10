@@ -14,8 +14,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 set(PROJECT_SOURCES
         main.cpp
-        widget.cpp
-        widget.h
+        pressurewidget.cpp
+        pressurewidget.h
         plotter.h
         plotter.cpp
         pressuretabledelegate.h

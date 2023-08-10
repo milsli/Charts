@@ -1,8 +1,8 @@
-#include "widget.h"
+#include "pressurewidget.h"
 #include "plotter.h"
 #include "pressuretable.h"
 
-Widget::Widget(QWidget *parent)
+PressureWidget::PressureWidget(QWidget *parent)
     : QWidget(parent)
 {
     this->setGeometry(30,50, 1800, 900);
@@ -12,11 +12,11 @@ Widget::Widget(QWidget *parent)
     setupView();
 }
 
-Widget::~Widget()
+PressureWidget::~PressureWidget()
 {
 }
 
-void Widget::setupView()
+void PressureWidget::setupView()
 {
     plotterChart_ = new Plotter;
 
@@ -25,7 +25,7 @@ void Widget::setupView()
 
     pressureTableLayout->addWidget(pressureTable_);
     pressureTableLayout->addLayout(setUpButtons());
-    connect(pressureTable_, &PressureTable::itemChanged, this, &Widget::tableDataChanged);
+    connect(pressureTable_, &PressureTable::itemChanged, this, &PressureWidget::tableDataChanged);
 
     pressureTable_->initialValues();
 
@@ -34,7 +34,7 @@ void Widget::setupView()
     mainLayout_->addWidget(plotterChart_);
 }
 
-QHBoxLayout *Widget::setUpButtons()
+QHBoxLayout *PressureWidget::setUpButtons()
 {
     QPixmap plusPixmap("../Charts/plus.png");
     QPixmap minusPixmap("../Charts/minus.png");
@@ -56,13 +56,13 @@ QHBoxLayout *Widget::setUpButtons()
     buttonsLauout->addWidget(plusButton_);
     buttonsLauout->addWidget(minusButton_);
 
-    connect(plusButton_, &QPushButton::clicked, this,  &Widget::addRow);
-    connect(minusButton_, &QPushButton::clicked, this, &Widget::removeRow);
+    connect(plusButton_, &QPushButton::clicked, this,  &PressureWidget::addRow);
+    connect(minusButton_, &QPushButton::clicked, this, &PressureWidget::removeRow);
 
     return buttonsLauout;
 }
 
-bool Widget::timeColumnValidation()
+bool PressureWidget::timeColumnValidation()
 {
     int size =  pointSeries_.size();
     for(int i = 1; i < size; ++i)
@@ -80,7 +80,7 @@ bool Widget::timeColumnValidation()
     return true;
 }
 
-void Widget::tableDataChanged(QTableWidgetItem *item)
+void PressureWidget::tableDataChanged(QTableWidgetItem *item)
 {
     int serieSize = pointSeries_.size();
     int column = item->column();
@@ -113,14 +113,11 @@ void Widget::tableDataChanged(QTableWidgetItem *item)
     if(!timeColumnValidation())
         return;
 
-    if(serieSize >= 2)
-    {
-        if(pointSeries_.size() > 1 && pointSeries_.at(row).x() != 0 && pointSeries_.at(row).y() != 0)
-            plotterChart_->setCurveData(0, pointSeries_);
-    }
+    if(pointSeries_.at(row).y() != 0)
+        plotterChart_->setCurveData(0, pointSeries_);
 }
 
-void Widget::addRow()
+void PressureWidget::addRow()
 {
     if(pressureTable_->rowCount() == pointSeries_.size())
     {
@@ -129,7 +126,7 @@ void Widget::addRow()
     }
 }
 
-void Widget::removeRow()
+void PressureWidget::removeRow()
 {
     pressureTable_->removeRow();
     if(pointSeries_.size() > 2)
