@@ -16,8 +16,8 @@ bool PressureTable::addRow()
 {
     int difference = timeDiff();
 
-    QModelIndex rowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-    QTime time = pressureTableModel_->data(rowIndex).toTime();
+    QModelIndex timeCellIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
+    QTime time = pressureTableModel_->data(timeCellIndex).toTime();
     time = time.addSecs(difference);
 
     if(time.hour() > 0)
@@ -25,8 +25,11 @@ bool PressureTable::addRow()
 
     pressureTableModel_->setRowCount(++currentNumberRows_);
 
-    rowIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
-    pressureTableModel_->setData(rowIndex, time);
+    timeCellIndex = pressureTableModel_->index(currentNumberRows_ - 1, 0);
+    pressureTableModel_->setData(timeCellIndex, time);
+
+    QModelIndex pressureCellIndex = pressureTableModel_->index(currentNumberRows_ - 1, 1);
+    edit(pressureCellIndex);
 
     return true;
 }

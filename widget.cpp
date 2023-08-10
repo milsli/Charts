@@ -24,9 +24,7 @@ void Widget::setupView()
     pressureTable_ = new PressureTable(this);
 
     pressureTableLayout->addWidget(pressureTable_);
-
     pressureTableLayout->addLayout(setUpButtons());
-
     connect(pressureTable_, &PressureTable::itemChanged, this, &Widget::tableDataChanged);
 
     pressureTable_->initialValues();
@@ -128,7 +126,6 @@ void Widget::addRow()
     {
         if(!pressureTable_->addRow())
             QMessageBox::warning(this, tr("Nowy wiersz"), tr("Niemożliwe dodanie nowego wiersza. Przekroczony limit czasowy"));
-
     }
 }
 
