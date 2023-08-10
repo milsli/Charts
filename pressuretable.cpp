@@ -1,8 +1,8 @@
 #include "pressuretable.h"
 #include "pressuretabledelegate.h"
-#include "qdatetime.h"
-#include "qevent.h"
-#include "qheaderview.h"
+#include <QDatetime>
+#include <QEvent>
+#include <QHeaderview>
 
 PressureTable::PressureTable(int rows, int columns, QWidget *parent) : QTableWidget(rows, columns, parent)
     , currentNumberRows_(MINIMUM_ROW_NUMBER)

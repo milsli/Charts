@@ -6,7 +6,6 @@
 
 class TimeColumnDelegate : public QStyledItemDelegate
 {
-    Q_OBJECT
 public:
     explicit TimeColumnDelegate(QObject *parent = nullptr);
 
@@ -29,7 +28,6 @@ public:
 
 class NumberColumnDelegate :  public QStyledItemDelegate
 {
-    Q_OBJECT
 public:
     explicit NumberColumnDelegate(QObject *parent = nullptr);
 

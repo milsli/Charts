@@ -1,22 +1,24 @@
-#include "pressurewidget.h"
+#include "LPCWidget.h"
 #include "plotter.h"
 #include "pressuretable.h"
+#include <QMessageBox>
+#include <QTime>
 
-PressureWidget::PressureWidget(QWidget *parent)
+LPCWidget::LPCWidget(QWidget *parent)
     : QWidget(parent)
 {
-    this->setGeometry(30,50, 1800, 900);
+    //this->setGeometry(30,50, 1800, 900);
 
     mainLayout_ = new QHBoxLayout;
     setLayout(mainLayout_);
     setupView();
 }
 
-PressureWidget::~PressureWidget()
+LPCWidget::~LPCWidget()
 {
 }
 
-void PressureWidget::setupView()
+void LPCWidget::setupView()
 {
     plotterChart_ = new Plotter;
 
@@ -25,7 +27,7 @@ void PressureWidget::setupView()
 
     pressureTableLayout->addWidget(pressureTable_);
     pressureTableLayout->addLayout(setUpButtons());
-    connect(pressureTable_, &PressureTable::itemChanged, this, &PressureWidget::tableDataChanged);
+    connect(pressureTable_, &PressureTable::itemChanged, this, &LPCWidget::tableDataChanged);
 
     pressureTable_->initialValues();
 
@@ -34,7 +36,7 @@ void PressureWidget::setupView()
     mainLayout_->addWidget(plotterChart_);
 }
 
-QHBoxLayout *PressureWidget::setUpButtons()
+QHBoxLayout *LPCWidget::setUpButtons()
 {
     QPixmap plusPixmap("../Charts/plus.png");
     QPixmap minusPixmap("../Charts/minus.png");
@@ -56,13 +58,13 @@ QHBoxLayout *PressureWidget::setUpButtons()
     buttonsLauout->addWidget(plusButton_);
     buttonsLauout->addWidget(minusButton_);
 
-    connect(plusButton_, &QPushButton::clicked, this,  &PressureWidget::addRow);
-    connect(minusButton_, &QPushButton::clicked, this, &PressureWidget::removeRow);
+    connect(plusButton_, &QPushButton::clicked, this,  &LPCWidget::addRow);
+    connect(minusButton_, &QPushButton::clicked, this, &LPCWidget::removeRow);
 
     return buttonsLauout;
 }
 
-bool PressureWidget::timeColumnValidation()
+bool LPCWidget::timeColumnValidation()
 {
     int size =  pointSeries_.size();
     for(int i = 1; i < size; ++i)
@@ -80,7 +82,7 @@ bool PressureWidget::timeColumnValidation()
     return true;
 }
 
-void PressureWidget::tableDataChanged(QTableWidgetItem *item)
+void LPCWidget::tableDataChanged(QTableWidgetItem *item)
 {
     int serieSize = pointSeries_.size();
     int column = item->column();
@@ -117,7 +119,7 @@ void PressureWidget::tableDataChanged(QTableWidgetItem *item)
         plotterChart_->setCurveData(0, pointSeries_);
 }
 
-void PressureWidget::addRow()
+void LPCWidget::addRow()
 {
     if(pressureTable_->rowCount() == pointSeries_.size())
     {
@@ -126,7 +128,7 @@ void PressureWidget::addRow()
     }
 }
 
-void PressureWidget::removeRow()
+void LPCWidget::removeRow()
 {
     pressureTable_->removeRow();
     if(pointSeries_.size() > 2)

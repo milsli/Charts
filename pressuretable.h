@@ -13,7 +13,6 @@ const QString pressureColumnTitle = "Ciśnienie [mmHg]";
 
 class PressureTable : public QTableWidget
 {
-    Q_OBJECT
 public:
     PressureTable(int rows, int columns, QWidget *parent = nullptr);
 
@@ -38,9 +37,7 @@ private:
 private:
     uint16_t currentNumberRows_;
     TimeColumnDelegate *timeColumnDelegate_;
-    NumberColumnDelegate *numberColumnDelegate_;
-
-
+    NumberColumnDelegate *numberColumnDelegate_;    
 };
 
 #endif // PRESSURETABLE_H

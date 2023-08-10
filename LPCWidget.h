@@ -2,21 +2,22 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include <QtCharts/QtCharts>
-#include <QLineSeries>
-#include <QPointF>
+#include <QLayout>
+#include <QPushButton>
+#include <QPoint>
 
 class QBoxLayout;
 class Plotter;
 class PressureTable;
+class QTableWidgetItem;
 
-class PressureWidget : public QWidget
+class LPCWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    PressureWidget(QWidget *parent = nullptr);
-    ~PressureWidget();
+    LPCWidget(QWidget *parent = nullptr);
+    ~LPCWidget();
 
 private:
     void setupView();

@@ -11,7 +11,7 @@ class PlotSettings;
 
 class Plotter : public QWidget
 {
-    Q_OBJECT
+
     class PlotSettings
     {
     public:
@@ -51,9 +51,6 @@ private:
     PlotSettings plotSettings_;
     QRect rubberBandRect;
     QPixmap pixmap;
-
-signals:
-
 };
 
 #endif // PLOTTER_H
