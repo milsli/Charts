@@ -1,6 +1,7 @@
 #include "pressuretabledelegate.h"
 #include <QTimeEdit>
 #include <QLineEdit>
+#include "pressurecombobox.h"
 
 TimeColumnDelegate::TimeColumnDelegate(QObject *parent)
     : QStyledItemDelegate{parent}
@@ -43,32 +44,62 @@ QString TimeColumnDelegate::displayText(const QVariant &value, const QLocale &lo
     return str;
 }
 
-NumberColumnDelegate::NumberColumnDelegate(QObject *parent)
-{
-}
+//NumberColumnDelegate::NumberColumnDelegate(QObject *parent)
+//{
+//}
 
-QWidget *NumberColumnDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    QLineEdit *lineEdit = new QLineEdit(parent);
-    QIntValidator *validator = new QIntValidator(600, 950, lineEdit);
-    lineEdit->setValidator(validator);
-    return lineEdit;
-}
+//QWidget *NumberColumnDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+//{
+//    QLineEdit *lineEdit = new QLineEdit(parent);
+//    QIntValidator *validator = new QIntValidator(600, 950, lineEdit);
+//    lineEdit->setValidator(validator);
+//    return lineEdit;
+//}
 
-void NumberColumnDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
-{
-    int value = index.model()->data(index, Qt::DisplayRole).toInt();
-    QLineEdit *lineEdit = static_cast<QLineEdit *>(editor);
-    lineEdit->setText(QString::number(value));
-}
+//void NumberColumnDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+//{
+//    int value = index.model()->data(index, Qt::DisplayRole).toInt();
+//    QLineEdit *lineEdit = static_cast<QLineEdit *>(editor);
+//    lineEdit->setText(QString::number(value));
+//}
 
-void NumberColumnDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
-{
-    QLineEdit *lineEdit = static_cast<QLineEdit*>(editor);
-    model->setData(index, lineEdit->text().toInt(), Qt::EditRole);
-}
+//void NumberColumnDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+//{
+//    QLineEdit *lineEdit = static_cast<QLineEdit*>(editor);
+//    model->setData(index, lineEdit->text().toInt(), Qt::EditRole);
+//}
 
-void NumberColumnDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    editor->setGeometry(option.rect);
-}
+//void NumberColumnDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+//{
+//    editor->setGeometry(option.rect);
+//}
+
+//ComboColumnDelegate::ComboColumnDelegate(QObject *parent)
+//{
+
+//}
+
+//QWidget *ComboColumnDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+//{
+//    PressureComboBox *comboBox = new PressureComboBox(parent);
+//    return comboBox;
+//}
+
+//void ComboColumnDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+//{
+//    QVariant dataValue = index.model()->data(index, Qt::DisplayRole);
+//    QComboBox *comboShape = static_cast<QComboBox *>(editor);
+//    comboShape->setItemData(index.row(), dataValue);
+//}
+
+//void ComboColumnDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+//{
+//    QComboBox *comboShape = static_cast<QComboBox*>(editor);
+//    model->setData(index, comboShape->currentData(), Qt::DisplayRole); // EditRole
+//}
+
+//void ComboColumnDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+//{
+//    QComboBox *comboShape = static_cast<QComboBox*>(editor);
+//    comboShape->setGeometry(option.rect);
+//}

@@ -23,13 +23,11 @@ void LPCWidget::setupView()
     plotterChart_ = new Plotter;
 
     QVBoxLayout *pressureTableLayout = new QVBoxLayout;
-    pressureTable_ = new PressureTable(2, 2, this);
+    pressureTable_ = new PressureTable(0, 2, this);
 
     pressureTableLayout->addWidget(pressureTable_);
     pressureTableLayout->addLayout(setUpButtons());
     connect(pressureTable_, &PressureTable::itemChanged, this, &LPCWidget::tableDataChanged);
-
-    pressureTable_->initialValues();
 
     mainLayout_->addSpacing(20);
     mainLayout_->addLayout(pressureTableLayout);

@@ -22,6 +22,11 @@ set(PROJECT_SOURCES
         pressuretabledelegate.cpp
         pressuretable.h
         pressuretable.cpp
+        pressurecombobox.h
+        pressurecombobox.cpp
+        pressuredefinitiondialog.cpp
+        pressuredefinitiondialog.h
+        Types.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -42,7 +47,7 @@ else()
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(TimeTableWidget
-            ${PROJECT_SOURCES}
+            ${PROJECT_SOURCES}            
         )
     endif()
 endif()
