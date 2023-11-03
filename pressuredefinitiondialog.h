@@ -14,7 +14,10 @@ public:
     PressureDefinitionDialog(ShapeKind kind, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
     uint16_t getTimeInterval(){return timeInterval_;}
-    uint16_t getPressure(){return pressureDiff_;}
+    uint16_t getPressure()
+    {
+        return pressureDiff_;
+    }
     uint16_t getSteps(){return stepsNumber_;}
     uint16_t getPressureMax(){return pressureMax_;}
 

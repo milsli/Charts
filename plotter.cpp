@@ -40,7 +40,7 @@ void Plotter::setCurveData(int id, const QVector<QPoint> &data)
                                        return x.y() > y.y();
                                    })->y();
 
-    updateScale(minX, maxX, minY, maxY);
+    updateScale(minX, maxX, minY - 1, maxY + 1);
     curveMap[id] = data;
     refreshPixmap();
 }

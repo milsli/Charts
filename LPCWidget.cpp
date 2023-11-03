@@ -84,26 +84,81 @@ void LPCWidget::updateChart(const QVector<PressureElement>& elements)
 {
     // przyjęto założenie o próbkowaniu sygnału co sekundę
 
+    double lastPressure = 760.0;
+
     pointSeries_.clear();       // trochę to rozrzutne alu trudno wpaść na coś innego
 
     for(const PressureElement& el : elements)
     {
-
         if(el.elementType_ == ShapeKind::STABLE)
         {
-            for(int time = el.startTime_; time < el.timeInterval_; ++time)
+            for(int time = el.startTime_; time < el.realTime_; ++time)
             {
-                // pointSeries_.append()
-
+                QPoint point(time, lastPressure);
+                pointSeries_.append(point);
             }
         }
+        else if(el.elementType_ == ShapeKind::JUMP)
+        {
+            lastPressure += el.pressureDiff_;
+            for(int time = el.startTime_; time < el.realTime_; ++time)
+            {
+                QPoint point(time, lastPressure);
+                pointSeries_.append(point);
+            }
+        }
+        else if(el.elementType_ == ShapeKind::LINE)
+        {
+            double timeDiff = el.realTime_ - el.startTime_;
+            double pressureDiff = el.pressureDiff_ / timeDiff;
+
+            for(int time = el.startTime_; time < el.realTime_; ++time)
+            {
+                lastPressure += pressureDiff;
+                QPoint point(time, lastPressure);
+                pointSeries_.append(point);
+            }
+        }
+        else if(el.elementType_ == ShapeKind::SERIE)
+        {
+            double timeDiff = el.realTime_ - el.startTime_;
+            double slotTime = timeDiff / el.stepsNumber_;
+            double pressureDiff = el.pressureDiff_ / el.stepsNumber_;
+
+            for(int time = el.startTime_; time < el.realTime_; time += slotTime)
+            {
+                QPoint point1st(time, lastPressure);
+                pointSeries_.append(point1st);
+
+                lastPressure += pressureDiff;
+                QPoint point2nd(time, lastPressure);
+                pointSeries_.append(point2nd);
+            }
+        }
+        else if(el.elementType_ == ShapeKind::SINUS)
+        {
+            double amplitude = el.pressureMax_ - el.pressureDiff_;
+
+            el.timeInterval_; // okres
+            el.stepsNumber_;    // liczba okresów
 
 
+            for(int time = el.startTime_; time < el.realTime_; ++time)
+            {
+                double t = time - el.startTime_;
+                // lastPressure += amplitude * std::sin(t / el.stepsNumber_);
+
+                QPoint point(time, lastPressure + (amplitude / 2) * std::sin(t / el.stepsNumber_));
+                pointSeries_.append(point);
+            }
+
+
+        }
 
 
     }
 
-
+    plotterChart_->setCurveData(0, pointSeries_);
 }
 
 void LPCWidget::tableDataChanged(QTableWidgetItem *item)
