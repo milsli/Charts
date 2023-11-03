@@ -7,6 +7,7 @@
 #define MINIMUM_ROW_NUMBER 0
 
 class TimeColumnDelegate;
+class LPCWidget;
 
 const QString timeColumnTitle = "Czas [mm:ss]";
 const QString pressureColumnTitle = "Ciśnienie [mmHg]";
@@ -37,6 +38,7 @@ private slots:
 
 
 private:
+    LPCWidget* parent_;
     uint16_t currentRowsSize_;
     //int currentRow_;
     TimeColumnDelegate *timeColumnDelegate_;

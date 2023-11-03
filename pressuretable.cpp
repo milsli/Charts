@@ -5,12 +5,14 @@
 #include <QHeaderview>
 #include "pressurecombobox.h"
 #include "pressuredefinitiondialog.h"
+#include "LPCWidget.h"
 
 #include <QMessageBox>
 
 PressureTable::PressureTable(int rows, int columns, QWidget *parent) : QTableWidget(rows, columns, parent)
     , currentRowsSize_(MINIMUM_ROW_NUMBER)
 {
+    parent_ = static_cast<LPCWidget*>(parent);
     setupView();
     setupDelegates();
 }
@@ -25,37 +27,31 @@ bool PressureTable::addRow()
     if(currentRowsSize_ == 0)
     {
         QTime time(0,0,0,0);
+        pressureElement.startTime_ = 0;
         setRowCount(++currentRowsSize_);
         setItem(0, 0, new QTableWidgetItem(time.toString("hh:mm:ss")));
         pressureCombo->removeItem(1);
         setCellWidget(0, 1, pressureCombo);                
     }
-    else if(currentRowsSize_ == 1)
-    {
-        QTime time(0,0,10,0);
-        setRowCount(++currentRowsSize_);
-        setItem(1, 0, new QTableWidgetItem(time.toString("hh:mm:ss")));
-        setCellWidget(1, 1, pressureCombo);
-    }
     else
     {
-        int difference = timeDiff();
+        int sec = pressureElementSeries_[currentRowsSize_ - 1].realTime_ % 60;
+        int min = pressureElementSeries_[currentRowsSize_ - 1].realTime_ / 60;
+        int hours = pressureElementSeries_[currentRowsSize_ - 1].realTime_ / 3600;
 
-        QTableWidgetItem *cell = item(currentRowsSize_ - 1, 0);
-        QTime time = cell->data(Qt::DisplayRole).toTime();
-        time = time.addSecs(difference);
-
-        if(time.hour() > 0)
+        if(hours > 0)
             return false;
 
+        QTime startTime = QTime(0, min, sec);
+
+        pressureElement.startTime_ = pressureElementSeries_[currentRowsSize_ - 1].realTime_;    // start time nowego elementu
+
+
         setRowCount(++currentRowsSize_);
-
-        setItem(currentRowsSize_ - 1, 0, new QTableWidgetItem(time.toString("hh:mm:ss")));
-
+        setItem(currentRowsSize_ - 1, 0, new QTableWidgetItem(startTime.toString("hh:mm:ss")));
         setCellWidget(currentRowsSize_ - 1, 1, pressureCombo);
     }
 
-    // connect(pressureCombo, &PressureComboBox::currentIndexChanged, this, &PressureTable::onCurrentIndexChanged);
     connect(pressureCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentIndexChanged(int)));
 
     pressureElementSeries_.append(pressureElement);
@@ -121,14 +117,18 @@ void PressureTable::onCurrentIndexChanged(int index)
         ++index;
     }
 
-    PressureDefinitionDialog* pressureDialog;
+    PressureDefinitionDialog* pressureDialog;       // todo: zrobić jeden dialog tak aby raz sprawdzać accepted lub cancelled
     if(index == 1)      // bez zmian
     {
         pressureDialog = new PressureDefinitionDialog(ShapeKind::STABLE, this);
         if(pressureDialog->exec() == QDialog::Accepted)
         {
             pressureElementSeries_[currRow].elementType_ = ShapeKind::STABLE;
+            pressureElementSeries_[currRow].timeInterval_ = pressureDialog->getTimeInterval();
+            pressureElementSeries_[currRow].realTime_ = pressureElementSeries_[currRow].startTime_ + pressureElementSeries_[currRow].timeInterval_;
         }
+        else
+            return;
     }
     else if(index == 2)      // skok
     {
@@ -136,7 +136,12 @@ void PressureTable::onCurrentIndexChanged(int index)
         if(pressureDialog->exec() == QDialog::Accepted)
         {
             pressureElementSeries_[currRow].elementType_ = ShapeKind::JUMP;
+            pressureElementSeries_[currRow].timeInterval_ = pressureDialog->getTimeInterval();
+            pressureElementSeries_[currRow].pressureDiff_ = pressureDialog->getPressure();
+            pressureElementSeries_[currRow].realTime_ = pressureElementSeries_[currRow].startTime_ + pressureElementSeries_[currRow].timeInterval_;
         }
+        else
+            return;
     }
     else if(index == 3)      // linia
     {
@@ -144,7 +149,12 @@ void PressureTable::onCurrentIndexChanged(int index)
         if(pressureDialog->exec() == QDialog::Accepted)
         {
             pressureElementSeries_[currRow].elementType_ = ShapeKind::LINE;
+            pressureElementSeries_[currRow].timeInterval_ = pressureDialog->getTimeInterval();
+            pressureElementSeries_[currRow].pressureDiff_ = pressureDialog->getPressure();
+            pressureElementSeries_[currRow].realTime_ = pressureElementSeries_[currRow].startTime_ + pressureElementSeries_[currRow].timeInterval_;
         }
+        else
+            return;
     }
     else if(index == 4)      // seria skoków
     {
@@ -152,6 +162,10 @@ void PressureTable::onCurrentIndexChanged(int index)
         if(pressureDialog->exec() == QDialog::Accepted)
         {
             pressureElementSeries_[currRow].elementType_ = ShapeKind::SERIE;
+            pressureElementSeries_[currRow].timeInterval_ = pressureDialog->getTimeInterval();
+            pressureElementSeries_[currRow].pressureDiff_ = pressureDialog->getPressure();
+            pressureElementSeries_[currRow].stepsNumber_ = pressureDialog->getSteps();
+            pressureElementSeries_[currRow].realTime_ = pressureElementSeries_[currRow].startTime_ + pressureElementSeries_[currRow].timeInterval_;
         }
     }
     else if(index == 5)      // sinusoida
@@ -160,12 +174,22 @@ void PressureTable::onCurrentIndexChanged(int index)
         if(pressureDialog->exec() == QDialog::Accepted)
         {
             pressureElementSeries_[currRow].elementType_ = ShapeKind::SINUS;
+            pressureElementSeries_[currRow].timeInterval_ = pressureDialog->getTimeInterval();
+            pressureElementSeries_[currRow].pressureDiff_ = pressureDialog->getPressure();
+            pressureElementSeries_[currRow].pressureMax_ = pressureDialog->getPressureMax();
+            pressureElementSeries_[currRow].stepsNumber_ = pressureDialog->getSteps();
 
+            pressureElementSeries_[currRow].realTime_ = pressureElementSeries_[currRow].startTime_
+                                                        + (pressureElementSeries_[currRow].timeInterval_ * pressureElementSeries_[currRow].stepsNumber_);
         }
+        else
+            return;
     }
     else
         return;
 
+
+    parent_->updateChart(pressureElementSeries_);
 }
 
 int PressureTable::timeDiff()

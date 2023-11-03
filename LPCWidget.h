@@ -5,6 +5,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QPoint>
+#include "Types.h"
 
 class QBoxLayout;
 class Plotter;
@@ -18,6 +19,8 @@ class LPCWidget : public QWidget
 public:
     LPCWidget(QWidget *parent = nullptr);
     ~LPCWidget();
+
+    void updateChart(const QVector<PressureElement> &elements);
 
 private:
     void setupView();

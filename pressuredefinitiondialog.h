@@ -5,6 +5,7 @@
 #include "Types.h"
 
 class QVBoxLayout;
+class QLineEdit;
 
 class PressureDefinitionDialog : public QDialog
 {
@@ -30,7 +31,12 @@ private:
     uint8_t stepsNumber_;
     uint16_t pressureMax_;     // min dla sinusa
 
+    // widok
     QVBoxLayout* mainLayout_;
+    QLineEdit* timeEdit_;
+    QLineEdit* pressureEdit_;
+    QLineEdit* stepEdit_;
+    QLineEdit* pressureMaxEdit_;
 
 };
 

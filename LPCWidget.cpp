@@ -80,46 +80,72 @@ bool LPCWidget::timeColumnValidation()
     return true;
 }
 
+void LPCWidget::updateChart(const QVector<PressureElement>& elements)
+{
+    // przyjęto założenie o próbkowaniu sygnału co sekundę
+
+    pointSeries_.clear();       // trochę to rozrzutne alu trudno wpaść na coś innego
+
+    for(const PressureElement& el : elements)
+    {
+
+        if(el.elementType_ == ShapeKind::STABLE)
+        {
+            for(int time = el.startTime_; time < el.timeInterval_; ++time)
+            {
+                // pointSeries_.append()
+
+            }
+        }
+
+
+
+
+    }
+
+
+}
+
 void LPCWidget::tableDataChanged(QTableWidgetItem *item)
 {
-    int serieSize = pointSeries_.size();
-    int column = item->column();
-    int row = item->row();
+//    int serieSize = pointSeries_.size();
+//    int column = item->column();
+//    int row = item->row();
 
-    int iTime = 0;
-    int16_t pressure = 0;
-    if(column == 0)
-    {
-        QTime time = item->data(Qt::DisplayRole).toTime();
-        iTime = time.minute() * 60 + time.second();
-    }
-    else if(column == 1)
-        pressure = item->data(Qt::DisplayRole).toInt();
+//    int iTime = 0;
+//    int16_t pressure = 0;
+//    if(column == 0)
+//    {
+//        QTime time = item->data(Qt::DisplayRole).toTime();
+//        iTime = time.minute() * 60 + time.second();
+//    }
+//    else if(column == 1)
+//        pressure = item->data(Qt::DisplayRole).toInt();
 
-    if(row == serieSize)    // new point
-    {
-        QPoint newPoint {iTime, pressure};
-        pointSeries_.append(newPoint);
-    }
-    else
-    {
-        QPoint *point = pointSeries_.data();
-        if(column == 0)
-            point[row].setX(iTime);
-        if(column == 1)
-            point[row].setY(pressure);
-    }
+//    if(row == serieSize)    // new point
+//    {
+//        QPoint newPoint {iTime, pressure};
+//        pointSeries_.append(newPoint);
+//    }
+//    else
+//    {
+//        QPoint *point = pointSeries_.data();
+//        if(column == 0)
+//            point[row].setX(iTime);
+//        if(column == 1)
+//            point[row].setY(pressure);
+//    }
 
-    if(!timeColumnValidation())
-        return;
+//    if(!timeColumnValidation())
+//        return;
 
-    if(pointSeries_.at(row).y() != 0)
-        plotterChart_->setCurveData(0, pointSeries_);
+//    if(pointSeries_.at(row).y() != 0)
+//        plotterChart_->setCurveData(0, pointSeries_);
 }
 
 void LPCWidget::addRow()
 {
-    if(pressureTable_->rowCount() == pointSeries_.size())
+    // if(pressureTable_->rowCount() == pointSeries_.size())
     {
         if(!pressureTable_->addRow())
             QMessageBox::warning(this, tr("Nowy wiersz"), tr("Niemożliwe dodanie nowego wiersza. Przekroczony limit czasowy"));
